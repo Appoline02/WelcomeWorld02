@@ -1247,18 +1247,20 @@
     ============================================================ -->
     <script>
         // ============================================================
-        //  0. 配置：EmailJS（已填入你的密钥）
+        //  0. 配置：EmailJS + Supabase
         // ============================================================
         const EMAILJS_CONFIG = {
             publicKey: 'LUx2feIfRAtrER4Lh',
             serviceID: 'service_ja96mxm',
             templateID: 'template_4y9m18a',
         };
-        // Supabase 配置
-const SUPABASE_CONFIG = {
-    url: 'https://你的项目ID.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaWNybmNxbnZweWRhaHFhc2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1ODM1OTEsImV4cCI6MjEwMjE1OTU5MX0.BG6pao3WWDFzPOYL7zI4tVJcSfJWC4WR54vtIFJ-Np0',
-};
+
+        // Supabase 配置（已修复 url）
+        const SUPABASE_CONFIG = {
+            url: 'https://dqwcrncnqvpydqhqasax.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaWNybmNxbnZweWRhaHFhc2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1ODM1OTEsImV4cCI6MjEwMjE1OTU5MX0.BG6pao3WWDFzPOYL7zI4tVJcSfJWC4WR54vtIFJ-Np0',
+        };
+
         let emailjsReady = false;
 
         // ============================================================
@@ -1266,7 +1268,6 @@ const SUPABASE_CONFIG = {
         // ============================================================
         const STORAGE_KEY = 'welcomeworld_projects';
         const REMIND_KEY = 'welcomeworld_reminders';
-        const GUEST_KEY = 'welcomeworld_guestbook';
         const SELECTED_KEY = 'welcomeworld_selected';
 
         // 默认初始数据（首次使用自动填充）- 已扩充至18个项目
@@ -1601,15 +1602,6 @@ const SUPABASE_CONFIG = {
 
         function saveSelected(selected) {
             localStorage.setItem(SELECTED_KEY, JSON.stringify(selected));
-        }
-
-        function loadGuestbook() {
-            const raw = localStorage.getItem(GUEST_KEY);
-            return raw ? JSON.parse(raw) : [];
-        }
-
-        function saveGuestbook(messages) {
-            localStorage.setItem(GUEST_KEY, JSON.stringify(messages));
         }
 
         function genId() {
@@ -2207,153 +2199,154 @@ const SUPABASE_CONFIG = {
             if (e.target === this) closeAdmin();
         });
 
-// ============================================================
-//  9. 关于此页 + 留言板 (Supabase 纯公版)
-// ============================================================
+        // ============================================================
+        //  9. 关于此页 + 留言板 (Supabase 纯公版)
+        // ============================================================
 
-document.getElementById('aboutBtn').addEventListener('click', function() {
-    document.getElementById('aboutModal').classList.add('open');
-    renderGuestbook();
-});
-
-document.getElementById('aboutClose').addEventListener('click', function() {
-    document.getElementById('aboutModal').classList.remove('open');
-});
-
-document.getElementById('aboutModal').addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
-});
-
-document.getElementById('guestEmailToggle').addEventListener('change', function() {
-    const input = document.getElementById('guestEmailInput');
-    if (this.checked) {
-        input.style.display = 'inline-block';
-        input.required = true;
-    } else {
-        input.style.display = 'none';
-        input.required = false;
-    }
-});
-
-// 读取留言（从 Supabase）
-async function loadGuestbook() {
-    try {
-        const response = await fetch(
-            `${SUPABASE_CONFIG.url}/rest/v1/messages?select=*&order=created_at.desc`,
-            {
-                headers: {
-                    'apikey': SUPABASE_CONFIG.anonKey,
-                    'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-                }
-            }
-        );
-        if (!response.ok) throw new Error('读取失败');
-        const data = await response.json();
-        return data || [];
-    } catch (error) {
-        console.error('读取留言失败:', error);
-        return [];
-    }
-}
-
-// 渲染留言
-async function renderGuestbook() {
-    const messages = await loadGuestbook();
-    const container = document.getElementById('guestMsgList');
-    if (!messages || messages.length === 0) {
-        container.innerHTML = `<div style="color:var(--text-muted);font-size:0.8rem;">还没有留言，来做第一个吧 ✨</div>`;
-        return;
-    }
-    let html = '';
-    for (const msg of messages) {
-        const time = msg.created_at ? new Date(msg.created_at).toLocaleString('zh-CN') : '';
-        html += `
-            <div class="msg-item">
-                <span>${msg.name ? msg.name + '：' : ''}${msg.text}</span>
-                <span class="time">${time}</span>
-            </div>
-        `;
-    }
-    container.innerHTML = html;
-}
-
-// 提交留言（到 Supabase）
-document.getElementById('guestSubmitBtn').addEventListener('click', async function() {
-    const name = document.getElementById('guestNameInput').value.trim() || '匿名';
-    const text = document.getElementById('guestMsgInput').value.trim();
-    if (!text) { alert('请写下你想说的话'); return; }
-
-    try {
-        const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/messages`, {
-            method: 'POST',
-            headers: {
-                'apikey': SUPABASE_CONFIG.anonKey,
-                'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation',
-            },
-            body: JSON.stringify({
-                name: name,
-                text: text,
-                created_at: new Date().toISOString(),
-            })
+        document.getElementById('aboutBtn').addEventListener('click', function() {
+            document.getElementById('aboutModal').classList.add('open');
+            renderGuestbook();
         });
 
-        if (response.ok) {
-            await renderGuestbook();
-            document.getElementById('guestMsgInput').value = '';
-            document.getElementById('guestNameInput').value = '';
+        document.getElementById('aboutClose').addEventListener('click', function() {
+            document.getElementById('aboutModal').classList.remove('open');
+        });
 
-            // 如果用户勾选了发邮件
-            if (document.getElementById('guestEmailToggle').checked) {
-                const userEmail = document.getElementById('guestEmailInput').value.trim();
-                if (userEmail) {
-                    sendGuestEmail(name, text, userEmail);
-                } else {
-                    alert('请填写你的邮箱地址以便接收确认邮件');
-                }
+        document.getElementById('aboutModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+
+        document.getElementById('guestEmailToggle').addEventListener('change', function() {
+            const input = document.getElementById('guestEmailInput');
+            if (this.checked) {
+                input.style.display = 'inline-block';
+                input.required = true;
+            } else {
+                input.style.display = 'none';
+                input.required = false;
             }
+        });
 
-            alert('💬 留言已保存！所有人可见！');
-        } else {
-            const errorText = await response.text();
-            console.error('保存失败:', errorText);
-            alert('❌ 留言保存失败，请稍后重试');
+        // 读取留言（从 Supabase）
+        async function loadGuestbook() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/messages?select=*&order=created_at.desc`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                        }
+                    }
+                );
+                if (!response.ok) throw new Error('读取失败');
+                const data = await response.json();
+                return data || [];
+            } catch (error) {
+                console.error('读取留言失败:', error);
+                return [];
+            }
         }
-    } catch (error) {
-        console.error('提交留言出错:', error);
-        alert('❌ 网络错误，请检查网络后重试');
-    }
-});
 
-// 发送邮件通知
-function sendGuestEmail(name, text, userEmail) {
-    try {
-        emailjs.init(EMAILJS_CONFIG.publicKey);
-        const templateParams = {
-            from_name: name || '访客',
-            from_email: userEmail,
-            message: text,
-            to_email: 'wangyiran2027@163.com',
-            subject: 'WelcomeWorld 新留言'
-        };
-        emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, templateParams)
-            .then(() => {
-                console.log('邮件发送成功');
-            })
-            .catch((err) => {
-                console.error('邮件发送失败:', err);
-            });
-    } catch (e) {
-        console.error('EmailJS 错误:', e);
-    }
-}
+        // 渲染留言
+        async function renderGuestbook() {
+            const messages = await loadGuestbook();
+            const container = document.getElementById('guestMsgList');
+            if (!messages || messages.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted);font-size:0.8rem;">还没有留言，来做第一个吧 ✨</div>`;
+                return;
+            }
+            let html = '';
+            for (const msg of messages) {
+                const time = msg.created_at ? new Date(msg.created_at).toLocaleString('zh-CN') : '';
+                html += `
+                    <div class="msg-item">
+                        <span>${msg.name ? msg.name + '：' : ''}${msg.text}</span>
+                        <span class="time">${time}</span>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // 提交留言（到 Supabase）
+        document.getElementById('guestSubmitBtn').addEventListener('click', async function() {
+            const name = document.getElementById('guestNameInput').value.trim() || '匿名';
+            const text = document.getElementById('guestMsgInput').value.trim();
+            if (!text) { alert('请写下你想说的话'); return; }
+
+            try {
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        text: text,
+                        created_at: new Date().toISOString(),
+                    })
+                });
+
+                if (response.ok) {
+                    await renderGuestbook();
+                    document.getElementById('guestMsgInput').value = '';
+                    document.getElementById('guestNameInput').value = '';
+
+                    // 如果用户勾选了发邮件
+                    if (document.getElementById('guestEmailToggle').checked) {
+                        const userEmail = document.getElementById('guestEmailInput').value.trim();
+                        if (userEmail) {
+                            sendGuestEmail(name, text, userEmail);
+                        } else {
+                            alert('请填写你的邮箱地址以便接收确认邮件');
+                        }
+                    }
+
+                    alert('💬 留言已保存！所有人可见！');
+                } else {
+                    const errorText = await response.text();
+                    console.error('保存失败:', errorText);
+                    alert('❌ 留言保存失败，请稍后重试');
+                }
+            } catch (error) {
+                console.error('提交留言出错:', error);
+                alert('❌ 网络错误，请检查网络后重试');
+            }
+        });
+
+        // 发送邮件通知
+        function sendGuestEmail(name, text, userEmail) {
+            try {
+                emailjs.init(EMAILJS_CONFIG.publicKey);
+                const templateParams = {
+                    from_name: name || '访客',
+                    from_email: userEmail,
+                    message: text,
+                    to_email: 'wangyiran2027@163.com',
+                    subject: 'WelcomeWorld 新留言'
+                };
+                emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, templateParams)
+                    .then(() => {
+                        console.log('邮件发送成功');
+                    })
+                    .catch((err) => {
+                        console.error('邮件发送失败:', err);
+                    });
+            } catch (e) {
+                console.error('EmailJS 错误:', e);
+            }
+        }
+
         // ============================================================
         //  10. 深色模式切换
         // ============================================================
         let isDark = localStorage.getItem('theme') === 'dark' ||
             (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem(
-            'theme'));
+                'theme'));
 
         function applyTheme(dark) {
             if (dark) {
