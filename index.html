@@ -2208,15 +2208,18 @@ const SUPABASE_CONFIG = {
         });
 
 // ============================================================
-//  9. 关于此页 + 留言板 (Supabase 公共留言板)
+//  9. 关于此页 + 留言板 (Supabase 纯公版)
 // ============================================================
+
 document.getElementById('aboutBtn').addEventListener('click', function() {
     document.getElementById('aboutModal').classList.add('open');
     renderGuestbook();
 });
+
 document.getElementById('aboutClose').addEventListener('click', function() {
     document.getElementById('aboutModal').classList.remove('open');
 });
+
 document.getElementById('aboutModal').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
 });
@@ -2232,7 +2235,7 @@ document.getElementById('guestEmailToggle').addEventListener('change', function(
     }
 });
 
-// 从 Supabase 读取留言
+// 读取留言（从 Supabase）
 async function loadGuestbook() {
     try {
         const response = await fetch(
@@ -2244,7 +2247,7 @@ async function loadGuestbook() {
                 }
             }
         );
-        if (!response.ok) throw new Error('网络请求失败');
+        if (!response.ok) throw new Error('读取失败');
         const data = await response.json();
         return data || [];
     } catch (error) {
@@ -2253,7 +2256,7 @@ async function loadGuestbook() {
     }
 }
 
-// 渲染留言列表
+// 渲染留言
 async function renderGuestbook() {
     const messages = await loadGuestbook();
     const container = document.getElementById('guestMsgList');
@@ -2274,7 +2277,7 @@ async function renderGuestbook() {
     container.innerHTML = html;
 }
 
-// 提交留言到 Supabase
+// 提交留言（到 Supabase）
 document.getElementById('guestSubmitBtn').addEventListener('click', async function() {
     const name = document.getElementById('guestNameInput').value.trim() || '匿名';
     const text = document.getElementById('guestMsgInput').value.trim();
@@ -2301,6 +2304,7 @@ document.getElementById('guestSubmitBtn').addEventListener('click', async functi
             document.getElementById('guestMsgInput').value = '';
             document.getElementById('guestNameInput').value = '';
 
+            // 如果用户勾选了发邮件
             if (document.getElementById('guestEmailToggle').checked) {
                 const userEmail = document.getElementById('guestEmailInput').value.trim();
                 if (userEmail) {
@@ -2322,7 +2326,7 @@ document.getElementById('guestSubmitBtn').addEventListener('click', async functi
     }
 });
 
-// 发送邮件通知（保留原有功能）
+// 发送邮件通知
 function sendGuestEmail(name, text, userEmail) {
     try {
         emailjs.init(EMAILJS_CONFIG.publicKey);
@@ -2344,7 +2348,6 @@ function sendGuestEmail(name, text, userEmail) {
         console.error('EmailJS 错误:', e);
     }
 }
-
         // ============================================================
         //  10. 深色模式切换
         // ============================================================
