@@ -2713,7 +2713,7 @@
                     remind_time: new Date(data.remindTime).toLocaleString('zh-CN'),
                     subject: `🔔 WelcomeWorld 项目提醒：${data.projectName}`,
                 };
-                emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, templateParams)
+                emailjs.send(EMAILJS_CONFIG.serviceID, 'template_ri6j3hy', templateParams)
                     .then(() => {
                         console.log('提醒邮件发送成功');
                     })
