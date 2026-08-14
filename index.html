@@ -3202,6 +3202,11 @@
             }
         }
 
+        // 关于此页按钮
+document.getElementById('aboutBtn').addEventListener('click', function() {
+    document.getElementById('aboutModal').classList.add('open');
+    renderGuestbook();
+});
         async function renderGuestbook() {
             const messages = await loadGuestbook();
             const container = document.getElementById('guestMsgList');
