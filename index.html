@@ -4,17 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>WelcomeWorld · 公益项目游牧地图</title>
-    <!-- Leaflet 地图核心库 -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
     </script>
-    <!-- EmailJS 邮件服务 -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
     </script>
     <style>
-        /* ============================================================
-           CSS 变量：浅色 / 深色 双主题（Apple风格）
-           ============================================================ */
         :root {
             --bg: #ffffff;
             --bg-secondary: #f5f5f7;
@@ -35,7 +30,6 @@
             --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --map-height: 440px;
         }
-
         [data-theme="dark"] {
             --bg: #1c1c1e;
             --bg-secondary: #2c2c2e;
@@ -51,10 +45,6 @@
             --primary: #0a84ff;
             --primary-hover: #409cff;
         }
-
-        /* ============================================================
-           全局重置
-           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -83,16 +73,13 @@
             background: none;
             color: inherit;
         }
-
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 1.5rem;
         }
 
-        /* ============================================================
-           顶部导航栏
-           ============================================================ */
+        /* ===== 导航栏 ===== */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -122,7 +109,6 @@
             gap: 0.8rem;
             flex-wrap: wrap;
         }
-        /* 深色模式切换 */
         .theme-toggle {
             width: 44px;
             height: 44px;
@@ -138,7 +124,6 @@
         .theme-toggle:hover {
             background: var(--border);
         }
-        /* 统计徽章 */
         .stats-badge {
             display: flex;
             gap: 0.8rem;
@@ -158,9 +143,7 @@
             color: var(--text);
         }
 
-        /* ============================================================
-           欢迎页（门 → 诗 → 脚印 → 正文）
-           ============================================================ */
+        /* ===== 欢迎页 ===== */
         #welcome-page {
             position: fixed;
             top: 0;
@@ -182,125 +165,42 @@
             pointer-events: none;
         }
 
-        /* ----- 第一阶段：门 ----- */
+        /* 第一阶段：门 */
         #welcome-stage-door {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            transition: opacity 0.8s ease;
+            cursor: pointer;
+            transition: opacity 0.6s ease;
+            user-select: none;
         }
-        #welcome-stage-door.hidden {
+        #welcome-stage-door.fade-out {
             opacity: 0;
             pointer-events: none;
         }
-
-        .door-container {
-            position: relative;
-            width: 120px;
-            height: 200px;
-            cursor: pointer;
+        .door-emoji {
+            font-size: 140px;
+            line-height: 1;
             transition: transform 0.3s ease;
         }
-        .door-container:hover {
-            transform: scale(1.03);
+        .door-emoji:hover {
+            transform: scale(1.04);
         }
-
-        /* 门框 */
-        .door-frame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 3px solid var(--text);
-            border-radius: 4px;
-            background: var(--bg-secondary);
-            overflow: hidden;
-            transition: background 0.3s ease;
-        }
-
-        /* 门板（打开动画） */
-        .door-panel {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-card);
-            border-right: 3px solid var(--text);
-            transform-origin: left center;
-            transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
-            border-radius: 2px 0 0 2px;
-            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
-        }
-        .door-panel.open {
-            transform: perspective(800px) rotateY(-110deg);
-        }
-
-        /* 门把手 */
-        .door-handle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--text);
-            box-shadow: 0 0 0 4px var(--bg-card), 0 0 0 6px var(--text);
-            transition: all 0.3s ease;
-            z-index: 2;
-        }
-        .door-handle::after {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: -8px;
-            right: -8px;
-            bottom: -8px;
-            border-radius: 50%;
-            animation: handlePulse 2.2s ease-in-out infinite;
-            border: 2px solid var(--primary);
-            opacity: 0;
-        }
-        .door-container:hover .door-handle::after {
-            opacity: 1;
-        }
-
-        @keyframes handlePulse {
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.4;
-            }
-            50% {
-                transform: scale(1.35);
-                opacity: 0.9;
-            }
-        }
-
-        .door-container .hint-text {
-            margin-top: 2.2rem;
-            font-size: 0.7rem;
+        .door-hint {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            font-weight: 400;
-        }
-        .door-container:hover .hint-text {
-            opacity: 0.6;
+            letter-spacing: 1px;
+            font-weight: 300;
         }
 
-        /* ----- 第二阶段：诗 ----- */
+        /* 第二阶段：诗 */
         #welcome-stage-poem {
             display: flex;
             flex-direction: column;
@@ -315,6 +215,7 @@
             opacity: 0;
             transition: opacity 1.2s ease;
             pointer-events: none;
+            padding: 2rem;
         }
         #welcome-stage-poem.visible {
             opacity: 1;
@@ -336,12 +237,7 @@
             font-weight: 300;
             letter-spacing: 0.5px;
         }
-        .poem-text .highlight-line {
-            font-weight: 400;
-            color: var(--text);
-        }
 
-        /* 脚印引导 */
         .footprint-hint {
             margin-top: 2.5rem;
             font-size: 2rem;
@@ -363,7 +259,7 @@
             }
         }
 
-        /* ----- 第三阶段：正文 ----- */
+        /* 第三阶段：正文 */
         #welcome-stage-text {
             display: flex;
             flex-direction: column;
@@ -402,7 +298,6 @@
             height: 0.6rem;
         }
 
-        /* 欢迎页下拉框（在正文中） */
         .welcome-filter-group {
             display: flex;
             flex-direction: column;
@@ -477,9 +372,7 @@
             color: var(--text);
         }
 
-        /* ============================================================
-           主内容区（地图 + 项目列表）
-           ============================================================ */
+        /* ===== 主内容区 ===== */
         #main-content {
             display: none;
             padding-top: 0.5rem;
@@ -488,9 +381,7 @@
             display: block;
         }
 
-        /* ============================================================
-           地图容器
-           ============================================================ */
+        /* ===== 地图 ===== */
         .map-wrapper {
             position: relative;
             border-radius: var(--radius);
@@ -507,7 +398,6 @@
             background: var(--bg-secondary);
             z-index: 1;
         }
-        /* 地图上方的筛选栏（覆盖在地图右上角） */
         .filter-bar {
             position: absolute;
             top: 14px;
@@ -547,21 +437,6 @@
             color: #fff;
             box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2);
         }
-        .filter-btn .badge-count {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            font-size: 0.55rem;
-            background: var(--primary);
-            color: #fff;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
         .filter-btn-wrap {
             position: relative;
         }
@@ -579,9 +454,7 @@
             color: var(--text);
         }
 
-        /* ============================================================
-           项目卡片区（登机牌风格）
-           ============================================================ */
+        /* ===== 项目卡片 ===== */
         .details-wrapper {
             margin-top: 1.5rem;
             min-height: 200px;
@@ -597,14 +470,11 @@
             display: block;
             margin-bottom: 1rem;
         }
-
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 1.5rem;
         }
-
-        /* 登机牌卡片 */
         .ticket-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -620,7 +490,6 @@
             box-shadow: var(--shadow-lg);
             transform: translateY(-2px);
         }
-        /* 登机牌头部 — 航班信息 */
         .ticket-header {
             display: flex;
             justify-content: space-between;
@@ -677,7 +546,6 @@
             padding: 4px;
             flex-shrink: 0;
         }
-        /* 登机牌主体 */
         .ticket-body {
             padding: 0.8rem 1.2rem 0.6rem 1.2rem;
             display: grid;
@@ -713,7 +581,6 @@
             margin-right: 4px;
             border: 1px solid var(--border);
         }
-        /* 登机牌描述 */
         .ticket-desc {
             padding: 0.8rem 1.2rem;
             font-size: 0.88rem;
@@ -722,7 +589,6 @@
             flex: 1;
             border-bottom: 1px solid var(--border);
         }
-        /* 登机牌底部 — 费用 + 操作 */
         .ticket-footer {
             padding: 0.8rem 1.2rem 1rem 1.2rem;
             display: flex;
@@ -785,8 +651,6 @@
             border-color: #ffd60a;
             color: #1c1c1e;
         }
-
-        /* 收藏按钮 */
         .btn-favorite {
             background: transparent;
             border-color: var(--border);
@@ -797,9 +661,7 @@
             color: #1c1c1e;
         }
 
-        /* ============================================================
-           底部「我的专属清单」浮动栏
-           ============================================================ */
+        /* ===== 我的清单浮动栏 ===== */
         .my-list-bar {
             position: fixed;
             bottom: 0;
@@ -856,9 +718,7 @@
             border-color: var(--primary-hover);
         }
 
-        /* ============================================================
-           管理面板（模态框）
-           ============================================================ */
+        /* ===== 管理面板 ===== */
         .admin-toggle {
             position: fixed;
             bottom: 80px;
@@ -927,8 +787,6 @@
             font-size: 0.85rem;
             margin-bottom: 1.2rem;
         }
-
-        /* 管理面板标签切换 */
         .admin-tabs {
             display: flex;
             gap: 0.5rem;
@@ -953,14 +811,12 @@
             border-color: var(--border);
             background: var(--bg-secondary);
         }
-
         .admin-tab-content {
             display: none;
         }
         .admin-tab-content.active {
             display: block;
         }
-
         .admin-panel .field {
             margin-bottom: 0.7rem;
         }
@@ -1035,20 +891,6 @@
         .admin-panel .btn-primary:hover {
             background: var(--primary-hover);
         }
-        .admin-panel .btn-secondary {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.4rem 1.2rem;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .admin-panel .btn-secondary:hover {
-            background: var(--border);
-        }
         .admin-panel .project-list {
             margin-top: 1.2rem;
             border-top: 1px solid var(--border);
@@ -1087,25 +929,6 @@
         .admin-panel .list-item .edit-btn:hover {
             color: var(--primary);
         }
-        .admin-panel .list-item .status-badge {
-            font-size: 0.7rem;
-            padding: 0.1rem 0.6rem;
-            border-radius: 30px;
-            background: #f1f5f9;
-            color: #64748b;
-        }
-        .admin-panel .list-item .status-badge.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .admin-panel .list-item .status-badge.approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .admin-panel .list-item .status-badge.rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
         .admin-panel .recommend-actions {
             display: flex;
             gap: 0.3rem;
@@ -1134,9 +957,7 @@
             background: #fee2e2;
         }
 
-        /* ============================================================
-           关于此页（弹窗）
-           ============================================================ */
+        /* ===== 关于此页 ===== */
         .about-modal {
             display: none;
             position: fixed;
@@ -1197,7 +1018,7 @@
             margin-right: 6px;
         }
 
-        /* 推荐项目表单（在关于此页里） */
+        /* 推荐项目 */
         .recommend-section {
             border-top: 1px solid var(--border);
             padding-top: 1rem;
@@ -1362,9 +1183,7 @@
             border-color: var(--primary);
         }
 
-        /* ============================================================
-           页脚
-           ============================================================ */
+        /* ===== 页脚 ===== */
         .footer {
             margin-top: 3rem;
             padding: 1.5rem 0 1rem 0;
@@ -1397,9 +1216,7 @@
             color: var(--text-muted);
         }
 
-        /* ============================================================
-           响应式
-           ============================================================ */
+        /* ===== 响应式 ===== */
         @media (max-width: 768px) {
             .container {
                 padding: 0 1rem;
@@ -1481,9 +1298,8 @@
                 font-size: 0.95rem;
                 padding: 0 1rem;
             }
-            .door-container {
-                width: 100px;
-                height: 170px;
+            .door-emoji {
+                font-size: 100px;
             }
         }
         @media (max-width: 480px) {
@@ -1513,11 +1329,12 @@
                 height: 30px;
                 font-size: 0.85rem;
             }
+            .door-emoji {
+                font-size: 80px;
+            }
         }
 
-        /* ============================================================
-           Leaflet 地图深色模式适配
-           ============================================================ */
+        /* ===== Leaflet 深色适配 ===== */
         [data-theme="dark"] .leaflet-tile-pane {
             filter: invert(0.9) hue-rotate(180deg) brightness(0.9);
         }
@@ -1537,36 +1354,10 @@
             color: #f5f5f7;
         }
 
-        /* ============================================================
-           工具类
-           ============================================================ */
         .hidden {
             display: none !important;
         }
-        .text-center {
-            text-align: center;
-        }
-        .mt-1 {
-            margin-top: 0.8rem;
-        }
 
-        /* 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-
-        /* 重新探索按钮 - 导航栏左侧 */
         .nav-left {
             display: flex;
             align-items: center;
@@ -1585,16 +1376,28 @@
         .back-link.visible {
             display: inline-block;
         }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
     </style>
 </head>
 <body>
 
-    <!-- ============================================================
-    主容器
-    ============================================================ -->
     <div class="container">
 
-        <!-- ===== 导航栏 ===== -->
+        <!-- 导航栏 -->
         <nav class="navbar">
             <div class="nav-left">
                 <span class="back-link" id="backLink">← 重新探索</span>
@@ -1612,21 +1415,13 @@
             </div>
         </nav>
 
-        <!-- ============================================================
-        欢迎页（门 → 诗 → 脚印 → 正文）
-        ============================================================ -->
+        <!-- ===== 欢迎页 ===== -->
         <div id="welcome-page">
 
-            <!-- 第一阶段：门 -->
+            <!-- 第一阶段：门 (emoji) -->
             <div id="welcome-stage-door">
-                <div class="door-container" id="doorContainer">
-                    <div class="door-frame">
-                        <div class="door-panel" id="doorPanel">
-                            <div class="door-handle" id="doorHandle"></div>
-                        </div>
-                    </div>
-                    <div class="hint-text">点击门把手 ｜ 推开可能性</div>
-                </div>
+                <div class="door-emoji">🚪</div>
+                <div class="door-hint">点击进入</div>
             </div>
 
             <!-- 第二阶段：诗 -->
@@ -1657,7 +1452,6 @@
                     <span class="line">如果你心里已经有了方向，</span>
                     <span class="line">告诉我两个问题，我帮你找到它们：</span>
                 </div>
-
                 <div class="welcome-filter-group">
                     <div class="welcome-filter-row">
                         <label for="location-select">📍 你希望去到哪里？</label>
@@ -1675,7 +1469,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="welcome-actions">
                     <button class="btn-primary" id="goBtn">✈️ 出发</button>
                     <span class="skip-link" id="skipLink">跳过，直接探索全部项目</span>
@@ -1683,14 +1476,10 @@
             </div>
         </div>
 
-        <!-- ============================================================
-        主内容区（地图 + 项目列表）
-        ============================================================ -->
+        <!-- ===== 主内容区 ===== -->
         <div id="main-content">
-            <!-- ===== 地图 ===== -->
             <div class="map-wrapper">
                 <div id="map"></div>
-                <!-- 筛选栏（覆盖在地图右上角） -->
                 <div class="filter-bar" id="filterBar">
                     <div class="filter-btn-wrap">
                         <button class="filter-btn" data-filter="animal" title="与小动物互动">🐾</button>
@@ -1704,8 +1493,6 @@
                     <button class="filter-clear" id="filterClear">✕ 清除</button>
                 </div>
             </div>
-
-            <!-- ===== 项目详情区 ===== -->
             <div class="details-wrapper" id="detailsWrapper">
                 <div class="details-placeholder" id="placeholder">
                     <span class="big-icon">🗺️</span>
@@ -1715,7 +1502,7 @@
             </div>
         </div>
 
-        <!-- ===== 页脚 ===== -->
+        <!-- 页脚 -->
         <footer class="footer">
             <div class="wechat">💬 微信：Thalia-ishere</div>
             <div class="links">
@@ -1726,39 +1513,28 @@
         </footer>
     </div>
 
-    <!-- ============================================================
-    浮动：我的专属清单
-    ============================================================ -->
+    <!-- 我的清单 -->
     <div class="my-list-bar" id="myListBar">
-        <div class="info">
-            ✅ 已选 <strong id="selectedCount">0</strong> 个项目
-        </div>
+        <div class="info">✅ 已选 <strong id="selectedCount">0</strong> 个项目</div>
         <div class="actions">
             <button class="btn" id="clearSelectionBtn">清空</button>
             <button class="btn btn-primary" id="downloadListBtn">📥 下载清单 (Word)</button>
         </div>
     </div>
 
-    <!-- ============================================================
-    管理按钮（浮动）
-    ============================================================ -->
+    <!-- 管理按钮 -->
     <button class="admin-toggle" id="adminToggle">⚙️ 管理项目</button>
 
-    <!-- ============================================================
-    管理面板（模态框）
-    ============================================================ -->
+    <!-- 管理面板 -->
     <div class="admin-modal" id="adminModal">
         <div class="admin-panel">
             <button class="close-btn" id="adminClose">✕</button>
             <h2>📦 管理面板</h2>
             <div class="sub">管理已有项目 ｜ 审核用户推荐</div>
-
             <div class="admin-tabs">
                 <button class="active" data-tab="projects">📋 管理项目</button>
                 <button data-tab="recommendations">📬 待审核推荐</button>
             </div>
-
-            <!-- 管理项目标签 -->
             <div class="admin-tab-content active" id="tab-projects">
                 <form id="adminForm">
                     <div class="field">
@@ -1833,8 +1609,6 @@
                     <div style="color:var(--text-muted);font-size:0.8rem;padding:0.5rem 0;">当前项目列表</div>
                 </div>
             </div>
-
-            <!-- 待审核推荐标签 -->
             <div class="admin-tab-content" id="tab-recommendations">
                 <div style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem;">用户推荐的新项目，审核通过后会自动添加到项目库</div>
                 <div id="recommendList">
@@ -1844,15 +1618,12 @@
         </div>
     </div>
 
-    <!-- ============================================================
-    关于此页（模态框）
-    ============================================================ -->
+    <!-- 关于此页 -->
     <div class="about-modal" id="aboutModal">
         <div class="about-panel">
             <button class="close-btn" id="aboutClose">✕</button>
             <h2>📖 关于 WelcomeWorld</h2>
             <div class="sub">欢迎来到我们的世界</div>
-
             <div class="changelog">
                 <h4 style="color:var(--text);margin-bottom:0.3rem;">📋 更新日志</h4>
                 <ul id="changelogList">
@@ -1861,16 +1632,8 @@
                     <li><span class="date">2026.08.15</span> 📬 新增「推荐项目」功能，用户可推荐新项目，你可在管理后台审核</li>
                     <li><span class="date">2026.08.15</span> ❤️ 新增项目收藏功能</li>
                     <li><span class="date">2026.08.15</span> 🗑️ 留言板增加删除功能</li>
-                    <li><span class="date">2026.08.13</span> 🚀 项目库大幅扩充，新增格林卫、IVHQ、Projects Abroad、UNV 等多个组织的项目</li>
-                    <li><span class="date">2026.08.13</span> 🔗 所有项目官网链接已完善，点击「✈️ 官网」一键跳转</li>
-                    <li><span class="date">2026.08.13</span> 📧 EmailJS 邮件提醒功能已配置完成</li>
-                    <li><span class="date">2026.08.12</span> 🚀 网站正式上线，包含地图探索、项目管理、专属清单、邮件提醒等功能</li>
-                    <li><span class="date">2026.08.12</span> 🎨 支持深色/浅色模式切换</li>
-                    <li><span class="date">2026.08.12</span> 🗺️ 集成真实地图，小门悬停开门动画</li>
                 </ul>
             </div>
-
-            <!-- 推荐项目表单 -->
             <div class="recommend-section">
                 <h4 style="color:var(--text);margin-bottom:0.5rem;">📬 推荐项目</h4>
                 <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.8rem;">你知道某个不错的志愿者项目吗？推荐给我们，审核后会上架！</div>
@@ -1890,8 +1653,6 @@
                 </div>
                 <button class="btn" id="submitRecommendBtn">📤 提交推荐</button>
             </div>
-
-            <!-- 留言板 -->
             <div class="guestbook">
                 <h4 style="color:var(--text);margin-bottom:0.3rem;">💬 访客留言板</h4>
                 <div class="email-opt">
@@ -1914,20 +1675,14 @@
         </div>
     </div>
 
-    <!-- ============================================================
-    JavaScript：全部功能
-    ============================================================ -->
     <script>
-        // ============================================================
-        //  0. 配置：EmailJS + Supabase
-        // ============================================================
+        // ===== 配置 =====
         const EMAILJS_CONFIG = {
             publicKey: 'LUx2feIfRAtrER4Lh',
             serviceID: 'service_ja96mxm',
             templateID: 'template_4y9m18a',
         };
 
-        // Supabase 配置
         const SUPABASE_CONFIG = {
             url: 'https://dqwcrncnqvpydqhqasax.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaWNybmNxbnZweWRhaHFhc2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1ODM1OTEsImV4cCI6MjEwMjE1OTU5MX0.BG6pao3WWDFzPOYL7zI4tVJcSfJWC4WR54vtIFJ-Np0',
@@ -1935,525 +1690,73 @@
 
         let emailjsReady = false;
 
-        // ============================================================
-        //  1. 数据层
-        // ============================================================
+        // ===== 数据层 =====
         const STORAGE_KEY = 'welcomeworld_projects';
         const REMIND_KEY = 'welcomeworld_reminders';
         const SELECTED_KEY = 'welcomeworld_selected';
         const FAVORITE_KEY = 'welcomeworld_favorites';
 
-        // 默认初始数据（首次使用自动填充）- 已扩充至33个项目
         function getDefaultData() {
             return {
-                '中国': [{
-                    id: 'china-ivhgx',
-                    org: 'IVHQ',
-                    name: '广西乡村志愿教学',
-                    desc: '在广西乡村学校进行英语教学，每天约5小时，1-12周灵活可选。与全球志愿者一起工作，深入体验中国乡村文化。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '项目费从HK$2,514起（约合人民币2,300元）',
-                    includes: '项目匹配、当地协调员支持、行前培训',
-                    excludes: '食宿、机票、签证、保险',
-                    fit: '★★★★★ · 英语教学直接对口',
-                    process: 'IVHQ官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.volunteerhq.org/',
-                    logo: 'https://www.volunteerhq.org/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'china-savethechildren',
-                    org: '救助儿童会',
-                    name: '项目实习生（残障青年发展）',
-                    desc: '参与项目活动设计、监测评估、翻译及行政支持。工作地成都/昆明，深度参与国际NGO在华实际运作。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '有实习补贴（具体以招聘为准）',
-                    includes: '国际NGO实战经验、中英双语工作环境、项目全流程参与',
-                    excludes: '食宿交通自理（需在成都/昆明当地）',
-                    fit: '★★★★★ · 公益方向高度契合',
-                    process: '官网投递简历 → 面试 → 录用',
-                    link: 'https://www.savethechildren.org.cn/',
-                    logo: 'https://www.savethechildren.org.cn/favicon.ico',
-                    tags: ['child']
-                }],
-                '泰国': [{
-                    id: 'thai-greenlion-teach',
-                    org: '格林卫 (The Green Lion)',
-                    name: '清迈志愿教学',
-                    desc: '在清迈当地学校或教育点，协助开展英语教学、课堂互动、基础口语训练，每天2-3小时。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '4480元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★★ · 英语教学直接对口',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'thai-greenlion-kindergarten',
-                    org: '格林卫 (The Green Lion)',
-                    name: '清迈幼儿园服务',
-                    desc: '在清迈当地幼儿园陪伴儿童、协助课堂管理、组织游戏活动，深度体验泰北文化。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '3980元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★★ · 喜欢与孩子互动',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'thai-greenlion-elephant',
-                    org: '格林卫 (The Green Lion)',
-                    name: '清迈大象保护',
-                    desc: '在清迈大象避难所，照顾年老、生病或被救助的大象，参与喂食、清洁、观察记录等工作。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '8480元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★★ · 热爱动物保护',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['animal']
-                }, {
-                    id: 'thai-greenlion-community',
-                    org: '格林卫 (The Green Lion)',
-                    name: '华欣社区建设',
-                    desc: '在泰国华欣参与当地社区（寺庙、医院、学校）的建设和改造，如粉刷、修缮、环境美化等。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '4980元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★☆ · 动手能力强，喜欢团队协作',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['adult']
-                }, {
-                    id: 'thai-unb',
-                    org: '新青年·联合国项目',
-                    name: '联合国驻亚太总部实地交流 (UNB)',
-                    desc: '12天（2天线上+10天实地）赴曼谷联合国亚太经社理事会，参加国际会议（USLS）、外交参访、城市调研。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '约2万元人民币',
-                    includes: '综合评估、项目匹配、前置课程、国际组织场地及师资、签证辅导、行前培训、全程医疗/意外保险',
-                    excludes: '国际机票、签证费、部分餐饮、个人消费',
-                    fit: '★★★★★ · 联合国官方项目，英语专业优势',
-                    process: '通过学校国际处报名 → 提交材料 → 综合评估 → 录取',
-                    link: 'https://www.ceaie.edu.cn/',
-                    logo: 'https://www.ceaie.edu.cn/favicon.ico',
-                    tags: ['adult']
-                }, {
-                    id: 'thai-aiesec',
-                    org: 'AIESEC',
-                    name: '泰国·全球志愿者 (SDG)',
-                    desc: '6-8周跨文化志愿项目，聚焦教育、环保或性别平等议题，与当地NGO合作。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '参与费约400欧元（约合人民币3,100元）',
-                    includes: '项目匹配、行前培训、当地支持（签证协助、住宿安排）',
-                    excludes: '国际机票、签证费、保险、部分餐饮及个人消费',
-                    fit: '★★★★☆ · AIESEC全球网络，项目丰富',
-                    process: 'AIESEC官网注册 → 选择项目 → 面试 → 匹配缴费',
-                    link: 'https://www.aiesec.org/',
-                    logo: 'https://www.aiesec.org/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'thai-goeco-elephant',
-                    org: 'GoEco',
-                    name: '苏梅岛大象保护',
-                    desc: '在苏梅岛照顾被救助的大象，参与喂食、清洁、栖息地维护等工作。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网',
-                    includes: '项目安排、当地协调、食宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 热爱动物保护',
-                    process: 'GoEco官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.goeco.org/',
-                    logo: 'https://www.goeco.org/favicon.ico',
-                    tags: ['animal']
-                }, {
-                    id: 'thai-goeco-teach',
-                    org: 'GoEco',
-                    name: '苏梅岛英语教学',
-                    desc: '在苏梅岛教授英语、数学、科学和体育，帮助当地学生提升语言能力。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网',
-                    includes: '项目安排、当地协调、食宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 英语教学直接对口',
-                    process: 'GoEco官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.goeco.org/',
-                    logo: 'https://www.goeco.org/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'thai-gvi',
-                    org: 'GVI',
-                    name: '清迈儿童教学与环境保护',
-                    desc: '在清迈教授英语并支持当地保护工作，1-12周灵活选择，可申请高达80%的基金会资助。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网（可申请资助）',
-                    includes: '项目安排、住宿、当地支持',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 教学+环保双重体验',
-                    process: 'GVI官网申请 → 匹配 → 缴费',
-                    link: 'https://www.gvi.co.uk/',
-                    logo: 'https://www.gvi.co.uk/favicon.ico',
-                    tags: ['child', 'animal']
-                }],
-                '印度尼西亚': [{
-                    id: 'bali-greenlion-teach',
-                    org: '格林卫 (The Green Lion)',
-                    name: '巴厘岛乌布幼稚园教学',
-                    desc: '在乌布及周边村庄的幼稚园教孩子们基础英语、组织游戏和艺术活动。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '4480元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★★ · 英语教学直接对口',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'bali-greenlion-community',
-                    org: '格林卫 (The Green Lion)',
-                    name: '巴厘岛乌布社区建设',
-                    desc: '在乌布参与当地社区、学校、图书馆的粉刷与修缮，改善当地基础设施。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '4980元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★☆ · 动手能力强',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['adult']
-                }, {
-                    id: 'bali-turtle',
-                    org: '格林卫 (The Green Lion)',
-                    name: '巴厘岛佩尼达岛海龟保护',
-                    desc: '在佩尼达岛海龟保护中心，参与识别海龟、收集龟卵、照顾受伤海龟等工作。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '9980元/两周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★★ · 独特环保项目，英语沟通能力是关键',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['animal']
-                }],
-                '越南': [{
-                    id: 'vietnam-special',
-                    org: '格林卫 (The Green Lion)',
-                    name: '胡志明市·帮助特殊人群',
-                    desc: '在胡志明市的中心，为5-20岁的特殊人群（残障或孤儿）提供日常生活帮助和精神关怀。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '3980元/周',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★★ · 极具人文关怀，锻炼跨文化共情能力',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['child', 'adult']
-                }],
-                '斐济': [{
-                    id: 'fiji-greenlion',
-                    org: '格林卫 (The Green Lion)',
-                    name: '斐济志愿项目',
-                    desc: '在斐济参与志愿教学、社区建设或环境保护项目，体验南太平洋岛国文化。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请咨询格林卫官网',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★☆ · 独特目的地，多元项目选择',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['child', 'adult']
-                }, {
-                    id: 'fiji-gvi',
-                    org: 'GVI',
-                    name: '斐济公共卫生项目',
-                    desc: '在斐济Dawasamu地区开展公共卫生宣传、数据收集和健康教育，1-12周灵活选择。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网（可申请资助）',
-                    includes: '项目安排、住宿、当地支持',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★☆ · 公共卫生方向，英语能力要求高',
-                    process: 'GVI官网申请 → 匹配 → 缴费',
-                    link: 'https://www.gvi.co.uk/',
-                    logo: 'https://www.gvi.co.uk/favicon.ico',
-                    tags: ['adult']
-                }],
-                '斯里兰卡': [{
-                    id: 'srilanka-greenlion',
-                    org: '格林卫 (The Green Lion)',
-                    name: '斯里兰卡志愿项目',
-                    desc: '在斯里兰卡参与志愿教学、生态保护或社区建设，体验印度洋岛国的独特魅力。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请咨询格林卫官网',
-                    includes: '项目期间的食宿、当地接送、项目保险',
-                    excludes: '机票、签证、个人消费',
-                    fit: '★★★★☆ · 独特目的地，多元项目选择',
-                    process: '格林卫官网报名 → 匹配 → 缴费出行',
-                    link: 'https://www.greenwaychina.org/',
-                    logo: 'https://www.thegreenlion.com/favicon.ico',
-                    tags: ['child', 'animal']
-                }, {
-                    id: 'srilanka-goeco-turtle',
-                    org: 'GoEco',
-                    name: '斯里兰卡海龟保护',
-                    desc: '在斯里兰卡南部海岸参与濒危海龟的救援、康复和放归工作。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网',
-                    includes: '项目安排、当地协调、食宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 海洋动物保护，英语沟通能力是关键',
-                    process: 'GoEco官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.goeco.org/',
-                    logo: 'https://www.goeco.org/favicon.ico',
-                    tags: ['animal']
-                }, {
-                    id: 'srilanka-goeco-dogs',
-                    org: 'GoEco',
-                    name: '斯里兰卡流浪狗救助',
-                    desc: '在知名收容所照顾被遗弃和流浪的狗，参与日常照料、医疗协助和领养推广。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网',
-                    includes: '项目安排、当地协调、食宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★☆ · 热爱动物，有耐心和同理心',
-                    process: 'GoEco官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.goeco.org/',
-                    logo: 'https://www.goeco.org/favicon.ico',
-                    tags: ['animal']
-                }, {
-                    id: 'srilanka-projectsabroad',
-                    org: 'Projects Abroad',
-                    name: '斯里兰卡志愿者与社区服务',
-                    desc: '斯里兰卡提供教学、社区发展、动物保护等多种志愿者项目。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '因项目而异',
-                    includes: '项目匹配、当地支持、住宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★☆ · 多元项目选择，英语沟通能力是关键',
-                    process: 'Projects Abroad官网申请 → 匹配 → 缴费',
-                    link: 'https://www.projects-abroad.org/',
-                    logo: 'https://www.projects-abroad.org/favicon.ico',
-                    tags: ['child', 'animal']
-                }],
-                '美国': [{
-                    id: 'usa-step',
-                    org: '中国教育国际交流协会',
-                    name: '国际志愿者实习 (STEP)',
-                    desc: '以国际志愿者身份进入美国非营利机构或企业，进行4周职场实践，方向涵盖教育、文化艺术、医疗健康、公益服务、环境保护等。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '需咨询项目方（通常含项目费、食宿等）',
-                    includes: '项目匹配、寄宿家庭（含餐）、签证指导、当地协调、医疗保险',
-                    excludes: '国际机票、签证费、个人消费',
-                    fit: '★★★★★ · 官方项目，为中国大学生量身打造',
-                    process: '咨询学校国际处 → 提交申请材料 → 综合评估 → 录取',
-                    link: 'https://www.ceaie.edu.cn/',
-                    logo: 'https://www.ceaie.edu.cn/favicon.ico',
-                    tags: ['adult']
-                }],
-                '柬埔寨': [{
-                    id: 'cambodia-projectsabroad',
-                    org: 'Projects Abroad',
-                    name: '柬埔寨志愿者与社区服务',
-                    desc: '柬埔寨已成为东南亚必访的志愿者目的地，项目涵盖教学、社区发展、关爱等。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '因项目而异',
-                    includes: '项目匹配、当地支持、住宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 东南亚热门目的地，项目丰富',
-                    process: 'Projects Abroad官网申请 → 匹配 → 缴费',
-                    link: 'https://www.projects-abroad.org/',
-                    logo: 'https://www.projects-abroad.org/favicon.ico',
-                    tags: ['child']
-                }, {
-                    id: 'cambodia-gvi',
-                    org: 'GVI',
-                    name: '柬埔寨儿童教学',
-                    desc: '在NGO学校教授英语、环保意识、艺术和手工艺等，1-12周灵活选择。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网（可申请资助）',
-                    includes: '项目安排、住宿、当地支持',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 英语教学直接对口，可申请资助',
-                    process: 'GVI官网申请 → 匹配 → 缴费',
-                    link: 'https://www.gvi.co.uk/',
-                    logo: 'https://www.gvi.co.uk/favicon.ico',
-                    tags: ['child']
-                }],
-                '菲律宾': [{
-                    id: 'philippines-projectsabroad',
-                    org: 'Projects Abroad',
-                    name: '菲律宾志愿者与社区服务',
-                    desc: '菲律宾是东南亚热门目的地，项目涵盖教学、社区发展、关爱等。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '因项目而异',
-                    includes: '项目匹配、当地支持、住宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 东南亚热门目的地，项目丰富',
-                    process: 'Projects Abroad官网申请 → 匹配 → 缴费',
-                    link: 'https://www.projects-abroad.org/',
-                    logo: 'https://www.projects-abroad.org/favicon.ico',
-                    tags: ['child', 'adult']
-                }],
-                '蒙古': [{
-                    id: 'mongolia-projectsabroad',
-                    org: 'Projects Abroad',
-                    name: '蒙古志愿者项目',
-                    desc: '蒙古是新兴的志愿者目的地，适合喜欢独特文化体验的参与者，项目涵盖教学、社区发展等。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '因项目而异',
-                    includes: '项目匹配、当地支持、住宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★☆ · 独特文化体验，适合喜欢冒险的你',
-                    process: 'Projects Abroad官网申请 → 匹配 → 缴费',
-                    link: 'https://www.projects-abroad.org/',
-                    logo: 'https://www.projects-abroad.org/favicon.ico',
-                    tags: ['child']
-                }],
-                '马尔代夫': [{
-                    id: 'maldives-goeco',
-                    org: 'GoEco',
-                    name: '马尔代夫海龟保护与珊瑚修复',
-                    desc: '在Naifaru岛参与海龟康复、珊瑚保护和海洋生态监测，2026年有第三周免费优惠。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网（有优惠活动）',
-                    includes: '项目安排、当地协调、食宿',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 独特海洋保护体验，英语沟通能力是关键',
-                    process: 'GoEco官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.goeco.org/',
-                    logo: 'https://www.goeco.org/favicon.ico',
-                    tags: ['animal']
-                }],
-                '韩国': [{
-                    id: 'korea-goeco',
-                    org: 'GoEco',
-                    name: '首尔儿童看护与文化体验',
-                    desc: '一周文化体验 + 儿童看护志愿服务，体验韩国传统文化和现代都市生活。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '请查阅官网',
-                    includes: '项目安排、当地协调、食宿、文化活动',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★☆ · 短期项目，适合时间有限的用户',
-                    process: 'GoEco官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.goeco.org/',
-                    logo: 'https://www.goeco.org/favicon.ico',
-                    tags: ['child']
-                }],
-                '全球': [{
-                    id: 'global-aiesec',
-                    org: 'AIESEC',
-                    name: '全球志愿者 (Global Volunteer)',
-                    desc: '6-8周跨文化志愿项目，遍布60+国家，聚焦联合国可持续发展目标（SDG）。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '参与费约400欧元',
-                    includes: '项目匹配、行前培训、当地支持',
-                    excludes: '国际机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 全球最大青年组织，与你"全球出差"梦高度契合',
-                    process: 'AIESEC官网注册 → 选择项目 → 面试 → 匹配缴费',
-                    link: 'https://www.aiesec.org/',
-                    logo: 'https://www.aiesec.org/favicon.ico',
-                    tags: ['animal', 'child', 'adult']
-                }, {
-                    id: 'global-unv',
-                    org: '联合国志愿人员 (UNV)',
-                    name: '联合国线上志愿者',
-                    desc: '在线参与联合国机构的项目工作，如翻译、研究、设计等，每周最多20小时，最长12周。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '免费申请，无报酬',
-                    includes: '联合国体系工作经验、项目证书',
-                    excludes: '无报酬，需自备网络设备',
-                    fit: '★★★★★ · 英语专业优势明显，线上灵活',
-                    process: 'UNV官网注册 → 浏览项目 → 提交申请 → 筛选录用',
-                    link: 'https://www.unv.org/',
-                    logo: 'https://www.unv.org/favicon.ico',
-                    tags: ['adult']
-                }, {
-                    id: 'global-ivhq',
-                    org: 'IVHQ',
-                    name: '国际志愿者 (IVHQ)',
-                    desc: '在40+国家提供300+项目，涵盖环境保护、社区发展、特殊人群关怀、气候行动等多种类型。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '因项目而异，1周起约HK$3,256',
-                    includes: '项目匹配、当地协调、行前培训、24/7支持',
-                    excludes: '机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 全球最大志愿者组织之一',
-                    process: 'IVHQ官网注册 → 选择项目 → 缴费',
-                    link: 'https://www.volunteerhq.org/',
-                    logo: 'https://www.volunteerhq.org/favicon.ico',
-                    tags: ['animal', 'child', 'adult']
-                }, {
-                    id: 'global-projectsabroad',
-                    org: 'Projects Abroad',
-                    name: '国际志愿者 / 实习',
-                    desc: '全球最大的国际志愿者和实习组织之一，项目涵盖海洋保护、野生动物保护、全球健康、法律与人权、儿童关怀等。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '因项目而异，需支付定金$495',
-                    includes: '住宿、每日三餐、机场接送、培训与工作坊',
-                    excludes: '国际机票、签证、保险、个人消费',
-                    fit: '★★★★★ · 项目种类丰富，全球覆盖',
-                    process: 'Projects Abroad官网申请 → 匹配 → 支付定金 → 出行',
-                    link: 'https://www.projects-abroad.org/',
-                    logo: 'https://www.projects-abroad.org/favicon.ico',
-                    tags: ['animal', 'child', 'adult']
-                }, {
-                    id: 'global-cyva',
-                    org: '中国青年志愿者协会',
-                    name: '服务联合国机构项目',
-                    desc: '面向高校优秀青年，赴曼谷、埃及、斐济、尼泊尔、老挝、孟加拉国等国家开展国际志愿服务。',
-                    startDate: '',
-                    endDate: '',
-                    cost: '官方项目，详情咨询',
-                    includes: '项目安排、当地支持、保险',
-                    excludes: '国际机票、签证、个人消费',
-                    fit: '★★★★★ · 官方渠道，安全可靠',
-                    process: '通过学校团委或中国志愿服务网报名',
-                    link: 'https://www.zgzyz.org.cn/',
-                    logo: 'https://www.zgzyz.org.cn/favicon.ico',
-                    tags: ['adult']
-                }]
+                '中国': [
+                    { id: 'china-ivhgx', org: 'IVHQ', name: '广西乡村志愿教学', desc: '在广西乡村学校进行英语教学，每天约5小时，1-12周灵活可选。', startDate: '', endDate: '', cost: '项目费从HK$2,514起', includes: '项目匹配、当地协调员支持、行前培训', excludes: '食宿、机票、签证、保险', fit: '★★★★★ · 英语教学直接对口', process: 'IVHQ官网注册 → 选择项目 → 缴费', link: 'https://www.volunteerhq.org/', logo: 'https://www.volunteerhq.org/favicon.ico', tags: ['child'] },
+                    { id: 'china-savethechildren', org: '救助儿童会', name: '项目实习生（残障青年发展）', desc: '参与项目活动设计、监测评估、翻译及行政支持。', startDate: '', endDate: '', cost: '有实习补贴', includes: '国际NGO实战经验、中英双语工作环境', excludes: '食宿交通自理', fit: '★★★★★ · 公益方向高度契合', process: '官网投递简历 → 面试 → 录用', link: 'https://www.savethechildren.org.cn/', logo: 'https://www.savethechildren.org.cn/favicon.ico', tags: ['child'] }
+                ],
+                '泰国': [
+                    { id: 'thai-greenlion-teach', org: '格林卫 (The Green Lion)', name: '清迈志愿教学', desc: '在清迈当地学校协助开展英语教学、课堂互动。', startDate: '', endDate: '', cost: '4480元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★★ · 英语教学直接对口', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['child'] },
+                    { id: 'thai-greenlion-kindergarten', org: '格林卫 (The Green Lion)', name: '清迈幼儿园服务', desc: '在清迈当地幼儿园陪伴儿童、协助课堂管理。', startDate: '', endDate: '', cost: '3980元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★★ · 喜欢与孩子互动', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['child'] },
+                    { id: 'thai-greenlion-elephant', org: '格林卫 (The Green Lion)', name: '清迈大象保护', desc: '在清迈大象避难所，照顾被救助的大象。', startDate: '', endDate: '', cost: '8480元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★★ · 热爱动物保护', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['animal'] },
+                    { id: 'thai-greenlion-community', org: '格林卫 (The Green Lion)', name: '华欣社区建设', desc: '在泰国华欣参与当地社区的建设和改造。', startDate: '', endDate: '', cost: '4980元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★☆ · 动手能力强', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['adult'] },
+                    { id: 'thai-unb', org: '新青年·联合国项目', name: '联合国驻亚太总部实地交流', desc: '12天赴曼谷联合国亚太经社理事会，参加国际会议、外交参访。', startDate: '', endDate: '', cost: '约2万元', includes: '项目匹配、前置课程、国际组织场地及师资', excludes: '国际机票、签证费', fit: '★★★★★ · 联合国官方项目', process: '通过学校国际处报名 → 提交材料 → 录取', link: 'https://www.ceaie.edu.cn/', logo: 'https://www.ceaie.edu.cn/favicon.ico', tags: ['adult'] },
+                    { id: 'thai-aiesec', org: 'AIESEC', name: '泰国·全球志愿者 (SDG)', desc: '6-8周跨文化志愿项目，聚焦教育、环保或性别平等。', startDate: '', endDate: '', cost: '约400欧元', includes: '项目匹配、行前培训、当地支持', excludes: '机票、签证、保险', fit: '★★★★☆ · AIESEC全球网络', process: 'AIESEC官网注册 → 选择项目 → 面试 → 匹配缴费', link: 'https://www.aiesec.org/', logo: 'https://www.aiesec.org/favicon.ico', tags: ['child'] },
+                    { id: 'thai-goeco-elephant', org: 'GoEco', name: '苏梅岛大象保护', desc: '在苏梅岛照顾被救助的大象。', startDate: '', endDate: '', cost: '请查阅官网', includes: '项目安排、当地协调、食宿', excludes: '机票、签证、保险', fit: '★★★★★ · 热爱动物保护', process: 'GoEco官网注册 → 选择项目 → 缴费', link: 'https://www.goeco.org/', logo: 'https://www.goeco.org/favicon.ico', tags: ['animal'] },
+                    { id: 'thai-goeco-teach', org: 'GoEco', name: '苏梅岛英语教学', desc: '在苏梅岛教授英语、数学、科学和体育。', startDate: '', endDate: '', cost: '请查阅官网', includes: '项目安排、当地协调、食宿', excludes: '机票、签证、保险', fit: '★★★★★ · 英语教学直接对口', process: 'GoEco官网注册 → 选择项目 → 缴费', link: 'https://www.goeco.org/', logo: 'https://www.goeco.org/favicon.ico', tags: ['child'] },
+                    { id: 'thai-gvi', org: 'GVI', name: '清迈儿童教学与环境保护', desc: '在清迈教授英语并支持当地保护工作。', startDate: '', endDate: '', cost: '请查阅官网（可申请资助）', includes: '项目安排、住宿、当地支持', excludes: '机票、签证、保险', fit: '★★★★★ · 教学+环保双重体验', process: 'GVI官网申请 → 匹配 → 缴费', link: 'https://www.gvi.co.uk/', logo: 'https://www.gvi.co.uk/favicon.ico', tags: ['child', 'animal'] }
+                ],
+                '印度尼西亚': [
+                    { id: 'bali-greenlion-teach', org: '格林卫 (The Green Lion)', name: '巴厘岛乌布幼稚园教学', desc: '在乌布及周边村庄的幼稚园教孩子们基础英语。', startDate: '', endDate: '', cost: '4480元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★★ · 英语教学直接对口', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['child'] },
+                    { id: 'bali-greenlion-community', org: '格林卫 (The Green Lion)', name: '巴厘岛乌布社区建设', desc: '在乌布参与当地社区的粉刷与修缮。', startDate: '', endDate: '', cost: '4980元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★☆ · 动手能力强', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['adult'] },
+                    { id: 'bali-turtle', org: '格林卫 (The Green Lion)', name: '巴厘岛佩尼达岛海龟保护', desc: '在海龟保护中心参与海龟识别、收集龟卵、照顾受伤海龟。', startDate: '', endDate: '', cost: '9980元/两周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★★ · 独特环保项目', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['animal'] }
+                ],
+                '越南': [
+                    { id: 'vietnam-special', org: '格林卫 (The Green Lion)', name: '胡志明市·帮助特殊人群', desc: '为5-20岁的特殊人群提供日常生活帮助和精神关怀。', startDate: '', endDate: '', cost: '3980元/周', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★★ · 极具人文关怀', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['child', 'adult'] }
+                ],
+                '斐济': [
+                    { id: 'fiji-greenlion', org: '格林卫 (The Green Lion)', name: '斐济志愿项目', desc: '在斐济参与志愿教学、社区建设或环境保护项目。', startDate: '', endDate: '', cost: '请咨询格林卫官网', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★☆ · 独特目的地', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['child', 'adult'] },
+                    { id: 'fiji-gvi', org: 'GVI', name: '斐济公共卫生项目', desc: '在斐济Dawasamu地区开展公共卫生宣传和数据收集。', startDate: '', endDate: '', cost: '请查阅官网（可申请资助）', includes: '项目安排、住宿、当地支持', excludes: '机票、签证、保险', fit: '★★★★☆ · 公共卫生方向', process: 'GVI官网申请 → 匹配 → 缴费', link: 'https://www.gvi.co.uk/', logo: 'https://www.gvi.co.uk/favicon.ico', tags: ['adult'] }
+                ],
+                '斯里兰卡': [
+                    { id: 'srilanka-greenlion', org: '格林卫 (The Green Lion)', name: '斯里兰卡志愿项目', desc: '参与志愿教学、生态保护或社区建设。', startDate: '', endDate: '', cost: '请咨询格林卫官网', includes: '食宿、当地接送、保险', excludes: '机票、签证、个人消费', fit: '★★★★☆ · 独特目的地', process: '格林卫官网报名 → 匹配 → 缴费出行', link: 'https://www.greenwaychina.org/', logo: 'https://www.thegreenlion.com/favicon.ico', tags: ['child', 'animal'] },
+                    { id: 'srilanka-goeco-turtle', org: 'GoEco', name: '斯里兰卡海龟保护', desc: '在斯里兰卡南部海岸参与濒危海龟的救援和康复。', startDate: '', endDate: '', cost: '请查阅官网', includes: '项目安排、当地协调、食宿', excludes: '机票、签证、保险', fit: '★★★★★ · 海洋动物保护', process: 'GoEco官网注册 → 选择项目 → 缴费', link: 'https://www.goeco.org/', logo: 'https://www.goeco.org/favicon.ico', tags: ['animal'] },
+                    { id: 'srilanka-goeco-dogs', org: 'GoEco', name: '斯里兰卡流浪狗救助', desc: '在知名收容所照顾被遗弃和流浪的狗。', startDate: '', endDate: '', cost: '请查阅官网', includes: '项目安排、当地协调、食宿', excludes: '机票、签证、保险', fit: '★★★★☆ · 热爱动物', process: 'GoEco官网注册 → 选择项目 → 缴费', link: 'https://www.goeco.org/', logo: 'https://www.goeco.org/favicon.ico', tags: ['animal'] },
+                    { id: 'srilanka-projectsabroad', org: 'Projects Abroad', name: '斯里兰卡志愿者与社区服务', desc: '提供教学、社区发展、动物保护等多种志愿者项目。', startDate: '', endDate: '', cost: '因项目而异', includes: '项目匹配、当地支持、住宿', excludes: '机票、签证、保险', fit: '★★★★☆ · 多元项目选择', process: 'Projects Abroad官网申请 → 匹配 → 缴费', link: 'https://www.projects-abroad.org/', logo: 'https://www.projects-abroad.org/favicon.ico', tags: ['child', 'animal'] }
+                ],
+                '美国': [
+                    { id: 'usa-step', org: '中国教育国际交流协会', name: '国际志愿者实习 (STEP)', desc: '进入美国非营利机构或企业，进行4周职场实践。', startDate: '', endDate: '', cost: '需咨询项目方', includes: '项目匹配、寄宿家庭（含餐）、签证指导、医疗保险', excludes: '国际机票、签证费', fit: '★★★★★ · 官方项目', process: '咨询学校国际处 → 提交申请材料 → 录取', link: 'https://www.ceaie.edu.cn/', logo: 'https://www.ceaie.edu.cn/favicon.ico', tags: ['adult'] }
+                ],
+                '柬埔寨': [
+                    { id: 'cambodia-projectsabroad', org: 'Projects Abroad', name: '柬埔寨志愿者与社区服务', desc: '项目涵盖教学、社区发展、关爱等。', startDate: '', endDate: '', cost: '因项目而异', includes: '项目匹配、当地支持、住宿', excludes: '机票、签证、保险', fit: '★★★★★ · 东南亚热门目的地', process: 'Projects Abroad官网申请 → 匹配 → 缴费', link: 'https://www.projects-abroad.org/', logo: 'https://www.projects-abroad.org/favicon.ico', tags: ['child'] },
+                    { id: 'cambodia-gvi', org: 'GVI', name: '柬埔寨儿童教学', desc: '在NGO学校教授英语、环保意识、艺术和手工艺。', startDate: '', endDate: '', cost: '请查阅官网（可申请资助）', includes: '项目安排、住宿、当地支持', excludes: '机票、签证、保险', fit: '★★★★★ · 英语教学直接对口', process: 'GVI官网申请 → 匹配 → 缴费', link: 'https://www.gvi.co.uk/', logo: 'https://www.gvi.co.uk/favicon.ico', tags: ['child'] }
+                ],
+                '菲律宾': [
+                    { id: 'philippines-projectsabroad', org: 'Projects Abroad', name: '菲律宾志愿者与社区服务', desc: '项目涵盖教学、社区发展、关爱等。', startDate: '', endDate: '', cost: '因项目而异', includes: '项目匹配、当地支持、住宿', excludes: '机票、签证、保险', fit: '★★★★★ · 东南亚热门目的地', process: 'Projects Abroad官网申请 → 匹配 → 缴费', link: 'https://www.projects-abroad.org/', logo: 'https://www.projects-abroad.org/favicon.ico', tags: ['child', 'adult'] }
+                ],
+                '蒙古': [
+                    { id: 'mongolia-projectsabroad', org: 'Projects Abroad', name: '蒙古志愿者项目', desc: '适合喜欢独特文化体验的参与者，涵盖教学、社区发展等。', startDate: '', endDate: '', cost: '因项目而异', includes: '项目匹配、当地支持、住宿', excludes: '机票、签证、保险', fit: '★★★★☆ · 独特文化体验', process: 'Projects Abroad官网申请 → 匹配 → 缴费', link: 'https://www.projects-abroad.org/', logo: 'https://www.projects-abroad.org/favicon.ico', tags: ['child'] }
+                ],
+                '马尔代夫': [
+                    { id: 'maldives-goeco', org: 'GoEco', name: '马尔代夫海龟保护与珊瑚修复', desc: '在Naifaru岛参与海龟康复、珊瑚保护和海洋生态监测。', startDate: '', endDate: '', cost: '请查阅官网（有优惠活动）', includes: '项目安排、当地协调、食宿', excludes: '机票、签证、保险', fit: '★★★★★ · 独特海洋保护体验', process: 'GoEco官网注册 → 选择项目 → 缴费', link: 'https://www.goeco.org/', logo: 'https://www.goeco.org/favicon.ico', tags: ['animal'] }
+                ],
+                '韩国': [
+                    { id: 'korea-goeco', org: 'GoEco', name: '首尔儿童看护与文化体验', desc: '一周文化体验 + 儿童看护志愿服务。', startDate: '', endDate: '', cost: '请查阅官网', includes: '项目安排、当地协调、食宿、文化活动', excludes: '机票、签证、保险', fit: '★★★★☆ · 短期项目', process: 'GoEco官网注册 → 选择项目 → 缴费', link: 'https://www.goeco.org/', logo: 'https://www.goeco.org/favicon.ico', tags: ['child'] }
+                ],
+                '全球': [
+                    { id: 'global-aiesec', org: 'AIESEC', name: '全球志愿者 (Global Volunteer)', desc: '6-8周跨文化志愿项目，遍布60+国家。', startDate: '', endDate: '', cost: '约400欧元', includes: '项目匹配、行前培训、当地支持', excludes: '机票、签证、保险', fit: '★★★★★ · 全球最大青年组织', process: 'AIESEC官网注册 → 选择项目 → 面试 → 匹配缴费', link: 'https://www.aiesec.org/', logo: 'https://www.aiesec.org/favicon.ico', tags: ['animal', 'child', 'adult'] },
+                    { id: 'global-unv', org: '联合国志愿人员 (UNV)', name: '联合国线上志愿者', desc: '在线参与联合国机构的项目工作，每周最多20小时。', startDate: '', endDate: '', cost: '免费申请', includes: '联合国体系工作经验、项目证书', excludes: '无报酬', fit: '★★★★★ · 英语专业优势明显', process: 'UNV官网注册 → 浏览项目 → 提交申请', link: 'https://www.unv.org/', logo: 'https://www.unv.org/favicon.ico', tags: ['adult'] },
+                    { id: 'global-ivhq', org: 'IVHQ', name: '国际志愿者 (IVHQ)', desc: '在40+国家提供300+项目，涵盖环境保护、社区发展等。', startDate: '', endDate: '', cost: '因项目而异', includes: '项目匹配、当地协调、行前培训', excludes: '机票、签证、保险', fit: '★★★★★ · 全球最大志愿者组织之一', process: 'IVHQ官网注册 → 选择项目 → 缴费', link: 'https://www.volunteerhq.org/', logo: 'https://www.volunteerhq.org/favicon.ico', tags: ['animal', 'child', 'adult'] },
+                    { id: 'global-projectsabroad', org: 'Projects Abroad', name: '国际志愿者 / 实习', desc: '项目涵盖海洋保护、野生动物保护、全球健康、儿童关怀等。', startDate: '', endDate: '', cost: '因项目而异', includes: '住宿、每日三餐、机场接送', excludes: '机票、签证、保险', fit: '★★★★★ · 项目种类丰富', process: 'Projects Abroad官网申请 → 匹配 → 缴费', link: 'https://www.projects-abroad.org/', logo: 'https://www.projects-abroad.org/favicon.ico', tags: ['animal', 'child', 'adult'] },
+                    { id: 'global-cyva', org: '中国青年志愿者协会', name: '服务联合国机构项目', desc: '赴曼谷、埃及、斐济、尼泊尔等国家开展国际志愿服务。', startDate: '', endDate: '', cost: '官方项目', includes: '项目安排、当地支持、保险', excludes: '国际机票、签证', fit: '★★★★★ · 官方渠道', process: '通过学校团委或中国志愿服务网报名', link: 'https://www.zgzyz.org.cn/', logo: 'https://www.zgzyz.org.cn/favicon.ico', tags: ['adult'] }
+                ]
             };
         }
 
@@ -2509,12 +1812,10 @@
         let reminders = loadReminders();
         let selectedIds = loadSelected();
         let favoriteIds = loadFavorites();
-        let currentFilter = null; // 'animal' | 'child' | 'adult' | null
-        let currentCountryFilter = null; // 国家名 或 null（不限）
+        let currentFilter = null;
+        let currentCountryFilter = null;
 
-        // ============================================================
-        //  2. 工具函数
-        // ============================================================
+        // ===== 工具函数 =====
         function getAllCountries() {
             return Object.keys(projectData).filter(c => projectData[c] && projectData[c].length > 0);
         }
@@ -2561,9 +1862,7 @@
             return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
         }
 
-        // ============================================================
-        //  3. 地图（Leaflet + OpenStreetMap）
-        // ============================================================
+        // ===== 地图 =====
         let map = null;
         let mapMarkers = [];
         let mapInitialized = false;
@@ -2577,19 +1876,15 @@
                 fadeAnimation: true,
                 attributionControl: true
             });
-
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 className: 'map-tiles'
             }).addTo(map);
-
             mapInitialized = true;
-
             window.addEventListener('resize', () => {
                 if (map) setTimeout(() => map.invalidateSize(), 200);
             });
-
             updateMapMarkers();
         }
 
@@ -2664,7 +1959,6 @@
                         });
                     }
                 }
-
                 mapMarkers.push(marker);
             }
 
@@ -2674,9 +1968,7 @@
             }
         }
 
-        // ============================================================
-        //  4. 渲染项目卡片（登机牌风格）
-        // ============================================================
+        // ===== 渲染项目卡片 =====
         function renderProjects(country) {
             const placeholder = document.getElementById('placeholder');
             const container = document.getElementById('projectCardsContainer');
@@ -2710,9 +2002,7 @@
                 const tagsDisplay = getTagsDisplay(p.tags);
                 const startDisplay = formatDate(p.startDate);
                 const endDisplay = formatDate(p.endDate);
-                const dateDisplay = (p.startDate && p.endDate) ?
-                    `${startDisplay} → ${endDisplay}` :
-                    '🔄 全年滚动';
+                const dateDisplay = (p.startDate && p.endDate) ? `${startDisplay} → ${endDisplay}` : '🔄 全年滚动';
 
                 html += `
                     <div class="ticket-card" data-id="${p.id}">
@@ -2758,17 +2048,11 @@
 
             html += '</div>';
             container.innerHTML = html;
-
             updateMyListBar();
-
             if (history.pushState) {
                 history.pushState(null, null, '#' + encodeURIComponent(country));
             }
         }
-
-        // ============================================================
-        //  5. 交互函数
-        // ============================================================
 
         window.showCountryProjects = function(country) {
             renderProjects(country);
@@ -2844,47 +2128,35 @@
             updateMyListBar();
         });
 
-        // ============================================================
-        //  6. 下载专属清单 (Word文档)
-        // ============================================================
+        // ===== 下载专属清单 =====
         document.getElementById('downloadListBtn').addEventListener('click', function() {
             if (selectedIds.length === 0) {
                 alert('请先勾选你感兴趣的项目！');
                 return;
             }
-
             const allProjects = getAllProjects();
             const selectedProjects = allProjects.filter(p => selectedIds.includes(p.id));
-
             let content = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' 
-                      xmlns:w='urn:schemas-microsoft-com:office:word' 
-                      xmlns='http://www.w3.org/TR/REC-html40'>
-                <head><meta charset="UTF-8">
-                <style>
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset="UTF-8"><style>
                     body { font-family: -apple-system, 'Helvetica Neue', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
                     h1 { color: #1d1d1f; font-size: 24px; border-bottom: 2px solid #0071e3; padding-bottom: 12px; }
-                    h2 { color: #1d1d1f; font-size: 18px; margin-top: 24px; }
                     .project { border: 1px solid #d2d2d7; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
                     .project .name { font-size: 16px; font-weight: 600; color: #1d1d1f; }
                     .project .org { color: #6e6e73; font-size: 13px; }
                     .project .detail { font-size: 13px; color: #1d1d1f; margin-top: 4px; }
                     .project .detail .label { color: #6e6e73; }
                     .footer { margin-top: 32px; color: #86868b; font-size: 12px; text-align: center; border-top: 1px solid #d2d2d7; padding-top: 16px; }
-                    .tag { display: inline-block; background: #f5f5f7; padding: 0 8px; border-radius: 12px; font-size: 12px; margin-right: 4px; }
-                </style>
-                </head>
+                </style></head>
                 <body>
                     <h1>🌍 我的专属公益项目清单</h1>
                     <p style="color:#6e6e73;margin-bottom:24px;">生成于 ${new Date().toLocaleString('zh-CN')} · 共 ${selectedProjects.length} 个项目</p>
             `;
-
             for (const p of selectedProjects) {
                 const startDisplay = formatDate(p.startDate);
                 const endDisplay = formatDate(p.endDate);
                 const dateDisplay = (p.startDate && p.endDate) ? `${startDisplay} → ${endDisplay}` : '🔄 全年滚动';
                 const tagsDisplay = getTagsDisplay(p.tags);
-
                 content += `
                     <div class="project">
                         <div class="name">${p.name || '未命名'}</div>
@@ -2900,15 +2172,7 @@
                     </div>
                 `;
             }
-
-            content += `
-                <div class="footer">
-                    ✧ 欢迎来到我们的世界 · WelcomeWorld<br/>
-                    微信：Thalia-ishere
-                </div>
-            </body></html>
-            `;
-
+            content += `<div class="footer">✧ 欢迎来到我们的世界 · WelcomeWorld<br/>微信：Thalia-ishere</div></body></html>`;
             const blob = new Blob([content], { type: 'application/msword;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -2920,9 +2184,7 @@
             URL.revokeObjectURL(url);
         });
 
-        // ============================================================
-        //  7. 筛选功能
-        // ============================================================
+        // ===== 筛选功能 =====
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const filter = this.dataset.filter;
@@ -2956,9 +2218,7 @@
             }
         });
 
-        // ============================================================
-        //  8. 管理面板（含审核推荐）
-        // ============================================================
+        // ===== 管理面板 =====
         let editingId = null;
 
         function openAdmin() {
@@ -3030,7 +2290,6 @@
             document.querySelector('[data-tab="projects"]').classList.add('active');
             document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById('tab-projects').classList.add('active');
-
             openAdmin();
             document.getElementById('editCountry').value = country;
             document.getElementById('editOrg').value = p.org || '';
@@ -3054,7 +2313,7 @@
         };
 
         window.deleteProject = function(country, id) {
-            if (!confirm(`确定要删除「${projectData[country]?.find(p=>p.id===id)?.name || '该项目'}」吗？`)) return;
+            if (!confirm(`确定要删除该项目吗？`)) return;
             if (!projectData[country]) return;
             projectData[country] = projectData[country].filter(p => p.id !== id);
             if (projectData[country].length === 0) {
@@ -3069,10 +2328,6 @@
             const hash = decodeURIComponent(window.location.hash.substring(1));
             if (hash && projectData[hash]) {
                 renderProjects(hash);
-            } else if (hash) {
-                document.getElementById('placeholder').style.display = 'block';
-                document.getElementById('projectCardsContainer').style.display = 'none';
-                document.getElementById('placeholder').innerHTML = `<span class="big-icon">🗺️</span>点击地图上的小门，开启你的公益副本`;
             } else {
                 renderAllProjects();
             }
@@ -3108,17 +2363,14 @@
             const id = document.getElementById('editIdHolder').textContent || genId();
 
             if (!projectData[country]) projectData[country] = [];
-
             const newProject = { id, org, name, desc, startDate, endDate, cost, includes, excludes, fit, process, link,
                 logo, tags };
-
             const existingIdx = projectData[country].findIndex(p => p.id === id);
             if (existingIdx >= 0) {
                 projectData[country][existingIdx] = newProject;
             } else {
                 projectData[country].push(newProject);
             }
-
             saveData(projectData);
             updateMapMarkers();
             renderAdminList();
@@ -3154,10 +2406,7 @@
             if (e.target === this) closeAdmin();
         });
 
-        // ============================================================
-        //  9. 推荐项目功能（用户提交 + 审核）
-        // ============================================================
-
+        // ===== 推荐项目 =====
         document.getElementById('submitRecommendBtn').addEventListener('click', async function() {
             const name = document.getElementById('recName').value.trim();
             const org = document.getElementById('recOrg').value.trim();
@@ -3204,12 +2453,9 @@
                     document.getElementById('recRecommender').value = '';
                     document.querySelectorAll('.rec-tag-check').forEach(cb => cb.checked = false);
                 } else {
-                    const err = await response.text();
-                    console.error('提交失败:', err);
                     alert('❌ 提交失败，请稍后重试');
                 }
             } catch (error) {
-                console.error('提交推荐出错:', error);
                 alert('❌ 网络错误，请检查网络后重试');
             }
         });
@@ -3217,25 +2463,20 @@
         async function loadRecommendations() {
             const container = document.getElementById('recommendList');
             container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0;">加载中...</div>';
-
             try {
                 const response = await fetch(
-                    `${SUPABASE_CONFIG.url}/rest/v1/recommendations?select=*&status=eq.pending&order=created_at.desc`,
-                    {
+                    `${SUPABASE_CONFIG.url}/rest/v1/recommendations?select=*&status=eq.pending&order=created_at.desc`, {
                         headers: {
                             'apikey': SUPABASE_CONFIG.anonKey,
                             'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
                         }
-                    }
-                );
+                    });
                 if (!response.ok) throw new Error('加载失败');
                 const data = await response.json();
-
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0;">🎉 暂无待审核推荐</div>';
                     return;
                 }
-
                 let html = '';
                 for (const rec of data) {
                     const tagsDisplay = rec.tags && rec.tags.length > 0 ? rec.tags.map(t => {
@@ -3260,14 +2501,12 @@
                 }
                 container.innerHTML = html;
             } catch (error) {
-                console.error('加载推荐失败:', error);
                 container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0;">❌ 加载失败，请刷新重试</div>';
             }
         }
 
         window.approveRecommend = async function(id) {
             if (!confirm('确认通过该推荐？项目将自动添加到项目库。')) return;
-
             try {
                 const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/recommendations?id=eq.${id}`, {
                     headers: {
@@ -3278,10 +2517,8 @@
                 const rec = await res.json();
                 if (!rec || rec.length === 0) { alert('推荐不存在'); return; }
                 const data = rec[0];
-
                 const country = data.country;
                 if (!projectData[country]) projectData[country] = [];
-
                 const newProject = {
                     id: genId(),
                     org: data.organization,
@@ -3298,10 +2535,8 @@
                     logo: '',
                     tags: data.tags || [],
                 };
-
                 projectData[country].push(newProject);
                 saveData(projectData);
-
                 await fetch(`${SUPABASE_CONFIG.url}/rest/v1/recommendations?id=eq.${id}`, {
                     method: 'PATCH',
                     headers: {
@@ -3311,7 +2546,6 @@
                     },
                     body: JSON.stringify({ status: 'approved' })
                 });
-
                 alert('✅ 项目已添加到项目库！');
                 loadRecommendations();
                 renderAdminList();
@@ -3324,7 +2558,6 @@
                 }
                 updateStats();
             } catch (error) {
-                console.error('审核通过失败:', error);
                 alert('❌ 操作失败，请稍后重试');
             }
         };
@@ -3344,15 +2577,11 @@
                 alert('已拒绝该推荐');
                 loadRecommendations();
             } catch (error) {
-                console.error('拒绝失败:', error);
                 alert('❌ 操作失败，请稍后重试');
             }
         };
 
-        // ============================================================
-        //  10. 关于此页 + 留言板 (Supabase 纯公版)
-        // ============================================================
-
+        // ===== 留言板 =====
         document.getElementById('aboutBtn').addEventListener('click', function() {
             document.getElementById('aboutModal').classList.add('open');
             renderGuestbook();
@@ -3379,20 +2608,15 @@
 
         async function loadGuestbook() {
             try {
-                const response = await fetch(
-                    `${SUPABASE_CONFIG.url}/rest/v1/messages?select=*&order=created_at.desc`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_CONFIG.anonKey,
-                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-                        }
+                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/messages?select=*&order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
                     }
-                );
+                });
                 if (!response.ok) throw new Error('读取失败');
-                const data = await response.json();
-                return data || [];
+                return await response.json() || [];
             } catch (error) {
-                console.error('读取留言失败:', error);
                 return [];
             }
         }
@@ -3423,21 +2647,16 @@
         window.deleteMessage = async function(id) {
             if (!confirm('确定要删除这条留言吗？')) return;
             try {
-                const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/messages?id=eq.${id}`, {
+                await fetch(`${SUPABASE_CONFIG.url}/rest/v1/messages?id=eq.${id}`, {
                     method: 'DELETE',
                     headers: {
                         'apikey': SUPABASE_CONFIG.anonKey,
                         'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
                     }
                 });
-                if (response.ok) {
-                    renderGuestbook();
-                } else {
-                    alert('❌ 删除失败，请稍后重试');
-                }
+                renderGuestbook();
             } catch (error) {
-                console.error('删除留言失败:', error);
-                alert('❌ 网络错误，请稍后重试');
+                alert('❌ 删除失败，请稍后重试');
             }
         };
 
@@ -3455,35 +2674,22 @@
                         'Content-Type': 'application/json',
                         'Prefer': 'return=representation',
                     },
-                    body: JSON.stringify({
-                        name: name,
-                        text: text,
-                        created_at: new Date().toISOString(),
-                    })
+                    body: JSON.stringify({ name, text, created_at: new Date().toISOString() })
                 });
 
                 if (response.ok) {
                     await renderGuestbook();
                     document.getElementById('guestMsgInput').value = '';
                     document.getElementById('guestNameInput').value = '';
-
                     if (document.getElementById('guestEmailToggle').checked) {
                         const userEmail = document.getElementById('guestEmailInput').value.trim();
-                        if (userEmail) {
-                            sendGuestEmail(name, text, userEmail);
-                        } else {
-                            alert('请填写你的邮箱地址以便接收确认邮件');
-                        }
+                        if (userEmail) sendGuestEmail(name, text, userEmail);
                     }
-
                     alert('💬 留言已保存！所有人可见！');
                 } else {
-                    const errorText = await response.text();
-                    console.error('保存失败:', errorText);
                     alert('❌ 留言保存失败，请稍后重试');
                 }
             } catch (error) {
-                console.error('提交留言出错:', error);
                 alert('❌ 网络错误，请检查网络后重试');
             }
         });
@@ -3499,20 +2705,11 @@
                     subject: 'WelcomeWorld 新留言'
                 };
                 emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, templateParams)
-                    .then(() => {
-                        console.log('邮件发送成功');
-                    })
-                    .catch((err) => {
-                        console.error('邮件发送失败:', err);
-                    });
-            } catch (e) {
-                console.error('EmailJS 错误:', e);
-            }
+                    .catch(() => {});
+            } catch (e) {}
         }
 
-        // ============================================================
-        //  11. 深色模式切换
-        // ============================================================
+        // ===== 深色模式 =====
         let isDark = localStorage.getItem('theme') === 'dark' ||
             (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem(
                 'theme'));
@@ -3523,4 +2720,247 @@
                 document.getElementById('themeToggle').textContent = '☀️';
             } else {
                 document.documentElement.removeAttribute('data-theme');
-                document.getElementById('themeToggle').textContent
+                document.getElementById('themeToggle').textContent = '🌙';
+            }
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
+            isDark = dark;
+            if (map) setTimeout(() => map.invalidateSize(), 100);
+        }
+        applyTheme(isDark);
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            applyTheme(!isDark);
+        });
+
+        // ===== 统计 =====
+        function updateStats() {
+            const all = getAllProjects();
+            const countries = getAllCountries();
+            document.getElementById('statProjects').textContent = all.length;
+            document.getElementById('statCountries').textContent = countries.length;
+            let animal = 0,
+                child = 0,
+                adult = 0;
+            for (const p of all) {
+                if (p.tags) {
+                    if (p.tags.includes('animal')) animal++;
+                    if (p.tags.includes('child')) child++;
+                    if (p.tags.includes('adult')) adult++;
+                }
+            }
+            document.getElementById('statAnimal').textContent = '🐾 ' + animal;
+            document.getElementById('statChild').textContent = '👶 ' + child;
+            document.getElementById('statAdult').textContent = '👤 ' + adult;
+        }
+
+        // ===== 欢迎页逻辑 =====
+        const welcomePage = document.getElementById('welcome-page');
+        const mainContent = document.getElementById('main-content');
+        const backLink = document.getElementById('backLink');
+        const locationSelect = document.getElementById('location-select');
+        const tagSelect = document.getElementById('tag-select');
+        const goBtn = document.getElementById('goBtn');
+        const skipLink = document.getElementById('skipLink');
+
+        // 门交互 (emoji 版本)
+        document.addEventListener('DOMContentLoaded', function() {
+            const doorStage = document.getElementById('welcome-stage-door');
+            const stagePoem = document.getElementById('welcome-stage-poem');
+
+            if (doorStage && stagePoem) {
+                doorStage.addEventListener('click', function() {
+                    doorStage.classList.add('fade-out');
+                    setTimeout(function() {
+                        stagePoem.classList.add('visible');
+                    }, 400);
+                });
+            }
+
+            // 脚印点击进入正文
+            const footprintHint = document.getElementById('footprintHint');
+            const stageText = document.getElementById('welcome-stage-text');
+            if (footprintHint && stageText) {
+                footprintHint.addEventListener('click', function() {
+                    stagePoem.classList.remove('visible');
+                    setTimeout(function() {
+                        stageText.classList.add('visible');
+                    }, 400);
+                });
+            }
+        });
+
+        function populateLocationSelect() {
+            const countries = getAllCountries();
+            locationSelect.innerHTML = '<option value="all">不限</option>';
+            const order = ['中国', '泰国', '印度尼西亚', '越南', '斐济', '斯里兰卡', '美国', '柬埔寨', '菲律宾', '蒙古', '马尔代夫', '韩国', '全球'];
+            const sorted = order.filter(c => countries.includes(c));
+            const others = countries.filter(c => !order.includes(c));
+            [...sorted, ...others].forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                locationSelect.appendChild(opt);
+            });
+        }
+
+        function enterMainContent(countryFilter, tagFilter) {
+            currentCountryFilter = countryFilter === 'all' ? null : countryFilter;
+            currentFilter = tagFilter === 'all' ? null : tagFilter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === currentFilter);
+            });
+            welcomePage.classList.add('hidden');
+            mainContent.classList.add('visible');
+            backLink.classList.add('visible');
+            updateMapMarkers();
+            if (currentCountryFilter) {
+                renderProjects(currentCountryFilter);
+                if (history.pushState) {
+                    history.pushState(null, null, '#' + encodeURIComponent(currentCountryFilter));
+                }
+            } else {
+                renderAllProjects();
+                if (history.pushState) {
+                    history.pushState(null, null, ' ');
+                }
+            }
+        }
+
+        function renderAllProjects() {
+            const placeholder = document.getElementById('placeholder');
+            const container = document.getElementById('projectCardsContainer');
+            const projects = getFilteredProjects();
+
+            if (!projects || projects.length === 0) {
+                placeholder.style.display = 'block';
+                container.style.display = 'none';
+                placeholder.innerHTML = `<span class="big-icon">🔍</span>没有找到匹配的项目，试试其他筛选条件吧`;
+                return;
+            }
+
+            placeholder.style.display = 'none';
+            container.style.display = 'block';
+
+            let html = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.5rem;">
+                    <h3 style="font-weight:500;color:var(--text);">🌍 全部项目 · ${projects.length} 个</h3>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">✈️ 点击「选我」加入专属清单</span>
+                </div>
+                <div class="card-grid">
+            `;
+
+            const selectedSet = new Set(selectedIds);
+            const favoriteSet = new Set(favoriteIds);
+
+            for (const p of projects) {
+                const isSelected = selectedSet.has(p.id);
+                const isReminded = reminders[p.id] || false;
+                const isFavorited = favoriteSet.has(p.id);
+                const tagsDisplay = getTagsDisplay(p.tags);
+                const startDisplay = formatDate(p.startDate);
+                const endDisplay = formatDate(p.endDate);
+                const dateDisplay = (p.startDate && p.endDate) ? `${startDisplay} → ${endDisplay}` : '🔄 全年滚动';
+
+                html += `
+                    <div class="ticket-card" data-id="${p.id}">
+                        <div class="ticket-header">
+                            <div class="ticket-flight">
+                                <span class="airline">${p.org || '组织'}</span>
+                                <span class="flight-name">${p.name || '未命名项目'}</span>
+                                <span style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;">${tagsDisplay}</span>
+                            </div>
+                            ${p.logo ? `<img class="ticket-logo" src="${p.logo}" alt="logo" onerror="this.style.display='none'" />` : ''}
+                        </div>
+                        <div class="ticket-body">
+                            <div class="item"><span class="label">登机口</span><span class="value">${p.country}</span></div>
+                            <div class="item"><span class="label">起飞</span><span class="value">${startDisplay}</span></div>
+                            <div class="item"><span class="label">落地</span><span class="value">${endDisplay}</span></div>
+                            <div class="item"><span class="label">适配</span><span class="value">${p.fit || '—'}</span></div>
+                            <div class="item"><span class="label">流程</span><span class="value" style="font-size:0.7rem;">${p.process || '请参考官网'}</span></div>
+                            <div class="item"><span class="label">标签</span><span class="value">${tagsDisplay}</span></div>
+                        </div>
+                        <div class="ticket-desc">
+                            ${p.desc || '—'}
+                            ${p.includes ? `<br/><span style="font-size:0.7rem;color:var(--text-muted);">✅ ${p.includes}</span>` : ''}
+                            ${p.excludes ? `<br/><span style="font-size:0.7rem;color:var(--text-muted);">❌ ${p.excludes}</span>` : ''}
+                        </div>
+                        <div class="ticket-footer">
+                            <div class="cost"><strong>💰 ${p.cost || '请咨询'}</strong></div>
+                            <div class="actions">
+                                ${p.link ? `<a href="${p.link}" target="_blank" class="btn btn-primary">✈️ 官网</a>` : ''}
+                                <button class="btn btn-check ${isSelected ? 'checked' : ''}" data-id="${p.id}" onclick="toggleSelect('${p.id}')">
+                                    ${isSelected ? '✅ 已选' : '☐ 选我'}
+                                </button>
+                                <button class="btn btn-remind ${isReminded ? 'active' : ''}" data-id="${p.id}" onclick="toggleRemind('${p.id}')">
+                                    ${isReminded ? '🔔' : '🔕'}
+                                </button>
+                                <button class="btn btn-favorite ${isFavorited ? 'favorited' : ''}" data-id="${p.id}" onclick="toggleFavorite('${p.id}')">
+                                    ${isFavorited ? '❤️' : '♡'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+            updateMyListBar();
+            if (history.pushState) {
+                history.pushState(null, null, ' ');
+            }
+        }
+
+        goBtn.addEventListener('click', function() {
+            enterMainContent(locationSelect.value, tagSelect.value);
+        });
+
+        skipLink.addEventListener('click', function() {
+            enterMainContent('all', 'all');
+        });
+
+        backLink.addEventListener('click', function() {
+            currentCountryFilter = null;
+            currentFilter = null;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            welcomePage.classList.remove('hidden');
+            mainContent.classList.remove('visible');
+            backLink.classList.remove('visible');
+            locationSelect.value = 'all';
+            tagSelect.value = 'all';
+            updateMapMarkers();
+        });
+
+        populateLocationSelect();
+
+        // ===== 初始化 =====
+        function init() {
+            welcomePage.classList.remove('hidden');
+            mainContent.classList.remove('visible');
+            backLink.classList.remove('visible');
+
+            initMap();
+            updateStats();
+            updateMyListBar();
+
+            setTimeout(() => {
+                if (map) map.invalidateSize();
+            }, 500);
+        }
+
+        window.renderProjects = renderProjects;
+        window.renderAllProjects = renderAllProjects;
+        window.updateMapMarkers = updateMapMarkers;
+        window.getAllCountries = getAllCountries;
+        window.projectData = projectData;
+
+        try {
+            emailjs.init(EMAILJS_CONFIG.publicKey);
+            emailjsReady = true;
+        } catch (e) {}
+
+        init();
+        console.log('🌍 WelcomeWorld 已加载完成！');
+    </script>
+
+</body>
+</html>
