@@ -159,6 +159,127 @@
         }
 
         /* ============================================================
+           欢迎页（全屏居中）
+           ============================================================ */
+        #welcome-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            animation: fadeIn 0.8s ease;
+        }
+        #welcome-page .welcome-title {
+            font-size: 2.4rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        #welcome-page .welcome-title span {
+            color: var(--primary);
+        }
+        #welcome-page .welcome-text {
+            max-width: 600px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        #welcome-page .welcome-text .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+        #welcome-page .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 1.8rem;
+        }
+        #welcome-page .filter-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+        #welcome-page .filter-row label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        #welcome-page .filter-row select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e73' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 12px;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+        }
+        #welcome-page .filter-row select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        #welcome-page .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 2.5rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+        #welcome-page .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: scale(1.02);
+        }
+        #welcome-page .skip-link {
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+        #welcome-page .skip-link:hover {
+            color: var(--text);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           主内容区（地图 + 项目列表）
+           ============================================================ */
+        #main-content {
+            display: none;
+        }
+        #main-content.visible {
+            display: block;
+        }
+
+        /* ============================================================
            地图容器
            ============================================================ */
         .map-wrapper {
@@ -954,6 +1075,17 @@
                 flex-direction: column;
                 text-align: center;
             }
+            #welcome-page .welcome-title {
+                font-size: 1.8rem;
+            }
+            #welcome-page .welcome-text {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+            #welcome-page .filter-group {
+                max-width: 100%;
+                padding: 0 1rem;
+            }
         }
         @media (max-width: 480px) {
             .ticket-body {
@@ -1034,6 +1166,26 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-muted);
         }
+
+        /* 重新探索按钮 - 导航栏左侧 */
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .back-link {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.15s ease;
+            display: none;
+        }
+        .back-link:hover {
+            color: var(--primary);
+        }
+        .back-link.visible {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -1045,7 +1197,10 @@
 
         <!-- ===== 导航栏 ===== -->
         <nav class="navbar">
-            <div class="logo">🌍 Welcome<span>World</span></div>
+            <div class="nav-left">
+                <span class="back-link" id="backLink">← 重新探索</span>
+                <span class="logo" style="margin-left:0.5rem;">🌍 Welcome<span>World</span></span>
+            </div>
             <div class="navbar-actions">
                 <div class="stats-badge" id="statsBadge">
                     <span>📌 <span class="num" id="statProjects">0</span> 个项目</span>
@@ -1058,31 +1213,69 @@
             </div>
         </nav>
 
-        <!-- ===== 地图 ===== -->
-        <div class="map-wrapper">
-            <div id="map"></div>
-            <!-- 筛选栏（覆盖在地图右上角） -->
-            <div class="filter-bar" id="filterBar">
-                <div class="filter-btn-wrap">
-                    <button class="filter-btn" data-filter="animal" title="与小动物互动">🐾</button>
-                </div>
-                <div class="filter-btn-wrap">
-                    <button class="filter-btn" data-filter="child" title="与未成年人互动">👶</button>
-                </div>
-                <div class="filter-btn-wrap">
-                    <button class="filter-btn" data-filter="adult" title="与成人互动">👤</button>
-                </div>
-                <button class="filter-clear" id="filterClear">✕ 清除</button>
+        <!-- ============================================================
+        欢迎页
+        ============================================================ -->
+        <div id="welcome-page">
+            <div class="welcome-title">🌍 Welcome<span>World</span></div>
+            <div class="welcome-text">
+                这是一个很大的世界。我一直相信，我们都有机会去拓展自己的边界，<br>
+                去遇见那些还没发生的故事。<br><br>
+                这个页面里，收集了一些可能让你出发的志愿者项目——<br>
+                它们分布在不同的国家，和不同的人、动物、生命产生连接。<br><br>
+                如果你心里已经有了方向，告诉我两个问题，我帮你找到它们：
             </div>
+            <div class="filter-group">
+                <div class="filter-row">
+                    <label for="location-select">📍 你希望去到哪里？</label>
+                    <select id="location-select">
+                        <option value="all">不限</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <label for="tag-select">🤝 你希望和谁建立连接？</label>
+                    <select id="tag-select">
+                        <option value="all">不限</option>
+                        <option value="animal">🐾 小动物</option>
+                        <option value="child">👶 孩子们</option>
+                        <option value="adult">👤 成人</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-primary" id="goBtn">✈️ 出发</button>
+            <div class="skip-link" id="skipLink">跳过，直接探索全部项目</div>
         </div>
 
-        <!-- ===== 项目详情区 ===== -->
-        <div class="details-wrapper" id="detailsWrapper">
-            <div class="details-placeholder" id="placeholder">
-                <span class="big-icon">🗺️</span>
-                点击地图上的小门，开启你的公益副本
+        <!-- ============================================================
+        主内容区（地图 + 项目列表）
+        ============================================================ -->
+        <div id="main-content">
+            <!-- ===== 地图 ===== -->
+            <div class="map-wrapper">
+                <div id="map"></div>
+                <!-- 筛选栏（覆盖在地图右上角） -->
+                <div class="filter-bar" id="filterBar">
+                    <div class="filter-btn-wrap">
+                        <button class="filter-btn" data-filter="animal" title="与小动物互动">🐾</button>
+                    </div>
+                    <div class="filter-btn-wrap">
+                        <button class="filter-btn" data-filter="child" title="与孩子们互动">👶</button>
+                    </div>
+                    <div class="filter-btn-wrap">
+                        <button class="filter-btn" data-filter="adult" title="与成人互动">👤</button>
+                    </div>
+                    <button class="filter-clear" id="filterClear">✕ 清除</button>
+                </div>
             </div>
-            <div id="projectCardsContainer" style="display: none;"></div>
+
+            <!-- ===== 项目详情区 ===== -->
+            <div class="details-wrapper" id="detailsWrapper">
+                <div class="details-placeholder" id="placeholder">
+                    <span class="big-icon">🗺️</span>
+                    点击地图上的小门，开启你的公益副本
+                </div>
+                <div id="projectCardsContainer" style="display: none;"></div>
+            </div>
         </div>
 
         <!-- ===== 页脚 ===== -->
@@ -1185,7 +1378,7 @@
                     <label>标签（选择项目与谁互动）</label>
                     <div class="tag-group">
                         <label><input type="checkbox" class="tag-check" value="animal" /> 🐾 小动物</label>
-                        <label><input type="checkbox" class="tag-check" value="child" /> 👶 未成年人</label>
+                        <label><input type="checkbox" class="tag-check" value="child" /> 👶 孩子们</label>
                         <label><input type="checkbox" class="tag-check" value="adult" /> 👤 成人</label>
                     </div>
                 </div>
@@ -1211,6 +1404,7 @@
             <div class="changelog">
                 <h4 style="color:var(--text);margin-bottom:0.3rem;">📋 更新日志</h4>
                 <ul id="changelogList">
+                    <li><span class="date">2026.08.14</span> 🎨 新增欢迎页，包含地点和互动对象筛选，优化首次使用体验</li>
                     <li><span class="date">2026.08.13</span> 🚀 项目库大幅扩充，新增格林卫、IVHQ、Projects Abroad、UNV 等多个组织的项目</li>
                     <li><span class="date">2026.08.13</span> 🔗 所有项目官网链接已完善，点击「✈️ 官网」一键跳转</li>
                     <li><span class="date">2026.08.13</span> 📧 EmailJS 邮件提醒功能已配置完成</li>
@@ -1255,9 +1449,9 @@
             templateID: 'template_4y9m18a',
         };
 
-        // Supabase 配置（已修复 url）
+        // Supabase 配置
         const SUPABASE_CONFIG = {
-            url: 'https://dqicrncqnvpydahqasax.supabase.co',
+            url: 'https://dqwcrncnqvpydqhqasax.supabase.co',
             anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxaWNybmNxbnZweWRhaHFhc2F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1ODM1OTEsImV4cCI6MjEwMjE1OTU5MX0.BG6pao3WWDFzPOYL7zI4tVJcSfJWC4WR54vtIFJ-Np0',
         };
 
@@ -1612,6 +1806,7 @@
         let reminders = loadReminders();
         let selectedIds = loadSelected();
         let currentFilter = null; // 'animal' | 'child' | 'adult' | null
+        let currentCountryFilter = null; // 国家名 或 null（不限）
 
         // ============================================================
         //  2. 工具函数
@@ -1632,6 +1827,11 @@
 
         function getFilteredProjects() {
             let all = getAllProjects();
+            // 按国家筛选
+            if (currentCountryFilter) {
+                all = all.filter(p => p.country === currentCountryFilter);
+            }
+            // 按标签筛选
             if (currentFilter) {
                 all = all.filter(p => p.tags && p.tags.includes(currentFilter));
             }
@@ -2000,10 +2200,17 @@
                     currentFilter = filter;
                     this.classList.add('active');
                 }
+                // 更新地图和卡片
                 updateMapMarkers();
                 const hash = decodeURIComponent(window.location.hash.substring(1));
                 if (hash && projectData[hash]) {
                     renderProjects(hash);
+                } else {
+                    // 如果没有选国家，显示所有
+                    const allCountries = getAllCountries();
+                    if (allCountries.length > 0) {
+                        // 默认显示第一个国家？或者我们显示全部？我们采用地图点击方式，所以这里不用管
+                    }
                 }
             });
         });
@@ -2394,31 +2601,220 @@
         }
 
         // ============================================================
-        //  12. 初始化
+        //  12. 欢迎页逻辑
+        // ============================================================
+        const welcomePage = document.getElementById('welcome-page');
+        const mainContent = document.getElementById('main-content');
+        const backLink = document.getElementById('backLink');
+        const locationSelect = document.getElementById('location-select');
+        const tagSelect = document.getElementById('tag-select');
+        const goBtn = document.getElementById('goBtn');
+        const skipLink = document.getElementById('skipLink');
+
+        // 填充地点下拉框
+        function populateLocationSelect() {
+            const countries = getAllCountries();
+            locationSelect.innerHTML = '<option value="all">不限</option>';
+            // 按照指定顺序
+            const order = ['中国', '泰国', '印度尼西亚', '越南', '斐济', '斯里兰卡', '美国', '全球'];
+            const sorted = order.filter(c => countries.includes(c));
+            // 添加其他不在order中的国家
+            const others = countries.filter(c => !order.includes(c));
+            [...sorted, ...others].forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                locationSelect.appendChild(opt);
+            });
+        }
+
+        // 进入地图（应用筛选）
+        function enterMainContent(countryFilter, tagFilter) {
+            // 设置筛选变量
+            currentCountryFilter = countryFilter === 'all' ? null : countryFilter;
+            currentFilter = tagFilter === 'all' ? null : tagFilter;
+
+            // 同步右上角的筛选按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === currentFilter);
+            });
+
+            // 切换显示
+            welcomePage.style.display = 'none';
+            mainContent.classList.add('visible');
+            backLink.classList.add('visible');
+
+            // 更新地图和项目列表
+            updateMapMarkers();
+            // 如果指定了国家，自动显示该国家项目
+            if (currentCountryFilter) {
+                renderProjects(currentCountryFilter);
+                // 更新哈希
+                if (history.pushState) {
+                    history.pushState(null, null, '#' + encodeURIComponent(currentCountryFilter));
+                }
+            } else {
+                // 如果没有国家筛选，显示第一个国家或占位符
+                const allCountries = getAllCountries();
+                if (allCountries.length > 0) {
+                    // 默认显示第一个国家（或者你可以选择显示全部，但地图标记会显示所有）
+                    // 但卡片区域需要显示某个国家的项目，不然是空的。
+                    // 我们改为：如果没有国家筛选，我们显示所有项目？但我们的卡片设计是按国家分组的。
+                    // 更好的方式：如果未选择国家，我们显示所有项目，但卡片列表需要调整。
+                    // 由于我们的卡片列表是依赖 country 参数显示该国家的项目，我们可以改为显示所有国家？
+                    // 我们可以修改显示逻辑：如果没有国家筛选，列出所有项目。
+                    // 但那样卡片头部显示“所有国家”，我们可以做一个特殊处理。
+                    // 我们暂时显示第一个国家，用户可以通过地图点击切换。
+                    // 但用户可能希望看到所有项目，所以我们在没有国家筛选时，显示所有项目，但卡片不再按国家分组。
+                    // 为了简单，我们修改 renderProjects 函数，如果 country 参数为空，则显示所有项目。
+                    // 我们将在下面修改。
+                    renderAllProjects();
+                }
+            }
+        }
+
+        // 渲染所有项目（不按国家分组）
+        function renderAllProjects() {
+            const placeholder = document.getElementById('placeholder');
+            const container = document.getElementById('projectCardsContainer');
+            const projects = getFilteredProjects(); // 已经应用了标签和地点筛选
+
+            if (!projects || projects.length === 0) {
+                placeholder.style.display = 'block';
+                container.style.display = 'none';
+                placeholder.innerHTML = `<span class="big-icon">🔍</span>没有找到匹配的项目，试试其他筛选条件吧`;
+                return;
+            }
+
+            placeholder.style.display = 'none';
+            container.style.display = 'block';
+
+            let html = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.5rem;">
+                    <h3 style="font-weight:500;color:var(--text);">🌍 全部项目 · ${projects.length} 个</h3>
+                    <span style="font-size:0.75rem;color:var(--text-muted);">✈️ 点击「选我」加入专属清单</span>
+                </div>
+                <div class="card-grid">
+            `;
+
+            const selectedSet = new Set(selectedIds);
+
+            for (const p of projects) {
+                const isSelected = selectedSet.has(p.id);
+                const isReminded = reminders[p.id] || false;
+                const tagsDisplay = getTagsDisplay(p.tags);
+                const startDisplay = formatDate(p.startDate);
+                const endDisplay = formatDate(p.endDate);
+                const dateDisplay = (p.startDate && p.endDate) ?
+                    `${startDisplay} → ${endDisplay}` :
+                    '🔄 全年滚动';
+
+                html += `
+                    <div class="ticket-card" data-id="${p.id}">
+                        <div class="ticket-header">
+                            <div class="ticket-flight">
+                                <span class="airline">${p.org || '组织'}</span>
+                                <span class="flight-name">${p.name || '未命名项目'}</span>
+                                <span style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;">${tagsDisplay}</span>
+                            </div>
+                            ${p.logo ? `<img class="ticket-logo" src="${p.logo}" alt="logo" onerror="this.style.display='none'" />` : ''}
+                        </div>
+                        <div class="ticket-body">
+                            <div class="item"><span class="label">登机口</span><span class="value">${p.country}</span></div>
+                            <div class="item"><span class="label">起飞</span><span class="value">${startDisplay}</span></div>
+                            <div class="item"><span class="label">落地</span><span class="value">${endDisplay}</span></div>
+                            <div class="item"><span class="label">适配</span><span class="value">${p.fit || '—'}</span></div>
+                            <div class="item"><span class="label">流程</span><span class="value" style="font-size:0.7rem;">${p.process || '请参考官网'}</span></div>
+                            <div class="item"><span class="label">标签</span><span class="value">${tagsDisplay}</span></div>
+                        </div>
+                        <div class="ticket-desc">
+                            ${p.desc || '—'}
+                            ${p.includes ? `<br/><span style="font-size:0.7rem;color:var(--text-muted);">✅ ${p.includes}</span>` : ''}
+                            ${p.excludes ? `<br/><span style="font-size:0.7rem;color:var(--text-muted);">❌ ${p.excludes}</span>` : ''}
+                        </div>
+                        <div class="ticket-footer">
+                            <div class="cost"><strong>💰 ${p.cost || '请咨询'}</strong></div>
+                            <div class="actions">
+                                ${p.link ? `<a href="${p.link}" target="_blank" class="btn btn-primary">✈️ 官网</a>` : ''}
+                                <button class="btn btn-check ${isSelected ? 'checked' : ''}" data-id="${p.id}" onclick="toggleSelect('${p.id}')">
+                                    ${isSelected ? '✅ 已选' : '☐ 选我'}
+                                </button>
+                                <button class="btn btn-remind ${isReminded ? 'active' : ''}" data-id="${p.id}" onclick="toggleRemind('${p.id}')">
+                                    ${isReminded ? '🔔' : '🔕'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+
+            updateMyListBar();
+
+            // 清除哈希
+            if (history.pushState) {
+                history.pushState(null, null, ' ');
+            }
+        }
+
+        // 点击出发按钮
+        goBtn.addEventListener('click', function() {
+            const country = locationSelect.value;
+            const tag = tagSelect.value;
+            enterMainContent(country, tag);
+        });
+
+        // 跳过链接
+        skipLink.addEventListener('click', function() {
+            // 直接进入，不应用任何筛选
+            enterMainContent('all', 'all');
+        });
+
+        // 返回重新探索
+        backLink.addEventListener('click', function() {
+            // 重置筛选
+            currentCountryFilter = null;
+            currentFilter = null;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            // 切换显示
+            welcomePage.style.display = 'flex';
+            mainContent.classList.remove('visible');
+            backLink.classList.remove('visible');
+            // 重置下拉框
+            locationSelect.value = 'all';
+            tagSelect.value = 'all';
+            // 更新地图（清空标记？我们保留地图但隐藏，没关系）
+            // 但为了数据一致，我们可以不清除标记，因为反正隐藏了。
+            // 但最好清理一下，以免下次进入时显示旧的。
+            // 我们可以在进入时重新生成。
+        });
+
+        // 初始化欢迎页
+        populateLocationSelect();
+
+        // ============================================================
+        //  13. 初始化
         // ============================================================
         function init() {
+            // 默认显示欢迎页，隐藏主内容
+            welcomePage.style.display = 'flex';
+            mainContent.classList.remove('visible');
+            backLink.classList.remove('visible');
+
+            // 初始化地图（先初始化，但不显示）
             initMap();
             updateStats();
             updateMyListBar();
 
-            const hash = window.location.hash;
-            if (hash) {
-                const country = decodeURIComponent(hash.substring(1));
-                if (getAllCountries().includes(country)) {
-                    renderProjects(country);
-                }
-            }
+            // 如果URL有哈希，自动进入对应国家（但我们现在有欢迎页，忽略哈希）
+            // 保留支持，但如果有哈希且不是欢迎页，可能用户直接访问，我们仍欢迎页优先
+            // 我们也可以检测是否带参数，但简单起见，总是先欢迎页
 
             setTimeout(() => {
                 if (map) map.invalidateSize();
             }, 500);
-
-            window.addEventListener('hashchange', function() {
-                const h = decodeURIComponent(window.location.hash.substring(1));
-                if (h && getAllCountries().includes(h)) {
-                    renderProjects(h);
-                }
-            });
         }
 
         window.renderProjects = renderProjects;
